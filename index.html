@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>记忆 · Memória Mandarim</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#241f18">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mandarim">
+<style>
+  :root{
+    --ink:#241f18;
+    --ink-soft:#6b6255;
+    --ink-faint:#9a9184;
+    --paper:#e7e1d2;
+    --paper-raised:#f1ecdf;
+    --card-face:#efe9da;
+    --seal:#9c231e;
+    --seal-dark:#711915;
+    --jade:#4f6b5c;
+    --jade-dark:#3a4f43;
+    --brass:#9c7a2e;
+    --line: rgba(36,31,24,0.16);
+    --line-strong: rgba(36,31,24,0.30);
+    --font-display: 'Songti SC','Noto Serif SC', Georgia, 'Times New Roman', serif;
+    --font-body: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    --shadow: 0 1px 2px rgba(36,31,24,0.08), 0 8px 24px rgba(36,31,24,0.10);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--font-body);
+    background:
+      radial-gradient(ellipse at top left, rgba(156,35,30,0.05), transparent 45%),
+      radial-gradient(ellipse at bottom right, rgba(79,107,92,0.06), transparent 50%),
+      var(--paper);
+    color:var(--ink);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  #app{max-width:640px;margin:0 auto;padding:20px 18px 60px;min-height:100vh;position:relative;}
+
+  /* ---------- header ---------- */
+  .topbar{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--line);}
+  .brand{display:flex;align-items:baseline;gap:10px;}
+  .brand-glyph{font-family:var(--font-display);font-size:26px;font-weight:700;color:var(--seal);letter-spacing:1px;}
+  .brand-text{display:flex;flex-direction:column;}
+  .brand-text .t1{font-family:var(--font-display);font-size:15px;font-weight:600;letter-spacing:.3px;}
+  .brand-text .t2{font-size:11px;color:var(--ink-soft);letter-spacing:.5px;}
+  .streak{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--brass);font-weight:600;white-space:nowrap;}
+  .streak .n{font-family:var(--font-display);font-size:16px;}
+
+  /* ---------- loading ---------- */
+  .loading-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;color:var(--ink-soft);gap:14px;}
+  .loading-glyph{font-family:var(--font-display);font-size:40px;color:var(--seal);animation:pulse 1.6s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:.35;}50%{opacity:1;}}
+
+  /* ---------- stats row ---------- */
+  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px;}
+  .stat{background:var(--paper-raised);border:1px solid var(--line);border-radius:4px;padding:10px 8px;text-align:center;}
+  .stat .val{font-family:var(--font-display);font-size:20px;font-weight:700;}
+  .stat .lab{font-size:9.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-soft);margin-top:2px;}
+  .stat.due .val{color:var(--seal);}
+  .stat.new .val{color:var(--jade);}
+
+  /* ---------- CTA ---------- */
+  .cta-all{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    background:var(--ink);color:var(--paper-raised);border:none;border-radius:6px;
+    padding:18px 20px;width:100%;cursor:pointer;margin-bottom:26px;
+    font-family:var(--font-body);box-shadow:var(--shadow);
+    transition:transform .15s ease;
+  }
+  .cta-all:active{transform:scale(0.98);}
+  .cta-all:disabled{opacity:.45;cursor:default;}
+  .cta-all .cta-left{text-align:left;}
+  .cta-all .cta-title{font-size:15px;font-weight:600;}
+  .cta-all .cta-sub{font-size:11.5px;color:#cfc6b3;margin-top:3px;}
+  .cta-all .cta-arrow{font-size:20px;color:var(--seal);}
+
+  /* ---------- deck list ---------- */
+  .section-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--ink-soft);margin:0 0 10px 2px;}
+  .deck-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;}
+  .deck-row{
+    display:flex;align-items:center;gap:12px;background:var(--paper-raised);
+    border:1px solid var(--line);border-radius:5px;padding:12px 14px;
+  }
+  .deck-chop{
+    width:34px;height:34px;flex:none;border-radius:3px;background:var(--seal);color:#f3ece0;
+    display:flex;align-items:center;justify-content:center;font-family:var(--font-display);
+    font-size:14px;font-weight:700;transform:rotate(-4deg);box-shadow:0 1px 2px rgba(0,0,0,.25);
+  }
+  .deck-chop.chop-vida{background:var(--jade);}
+  .deck-info{flex:1;min-width:0;}
+  .deck-name{font-size:13.5px;font-weight:600;}
+  .deck-progress-bar{height:4px;border-radius:2px;background:var(--line);margin-top:6px;overflow:hidden;}
+  .deck-progress-fill{height:100%;background:var(--jade);}
+  .deck-counts{font-size:10.5px;color:var(--ink-soft);margin-top:4px;}
+  .deck-go{
+    flex:none;border:1px solid var(--line-strong);background:transparent;color:var(--ink);
+    border-radius:4px;padding:7px 12px;font-size:11.5px;cursor:pointer;font-family:var(--font-body);
+  }
+  .deck-go:active{background:var(--ink);color:var(--paper-raised);}
+
+  /* ---------- settings / footer ---------- */
+  .footer-row{display:flex;justify-content:space-between;align-items:center;margin-top:26px;padding-top:14px;border-top:1px solid var(--line);}
+  .new-per-day{font-size:11.5px;color:var(--ink-soft);display:flex;align-items:center;gap:6px;}
+  .new-per-day input{width:44px;font-family:var(--font-body);font-size:12px;padding:3px 5px;border:1px solid var(--line-strong);border-radius:3px;background:var(--paper-raised);color:var(--ink);}
+  .reset-link{font-size:11px;color:var(--ink-faint);background:none;border:none;text-decoration:underline;cursor:pointer;font-family:var(--font-body);}
+
+  /* ---------- study screen ---------- */
+  .study-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px;}
+  .back-btn{border:none;background:none;font-size:20px;color:var(--ink-soft);cursor:pointer;padding:4px 8px;}
+  .study-progress-text{font-size:11.5px;color:var(--ink-soft);letter-spacing:.4px;}
+  .study-deck-name{font-size:11.5px;color:var(--seal);font-weight:600;text-align:right;}
+
+  .stage{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;min-height:56vh;}
+
+  .tile-wrap{perspective:1400px;width:100%;max-width:340px;aspect-ratio:1/1.08;margin:0 auto;}
+  .tile{
+    position:relative;width:100%;height:100%;
+    transform-style:preserve-3d;transition:transform .5s cubic-bezier(.2,.7,.3,1);
+    cursor:pointer;
+  }
+  .tile.flipped{transform:rotateY(180deg);}
+  .face{
+    position:absolute;inset:0;backface-visibility:hidden;
+    background:var(--card-face);border:1px solid var(--line-strong);border-radius:6px;
+    box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:20px;overflow:hidden;
+  }
+  .face-front{
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 50% 50%;
+    background-position:center;
+  }
+  .face-front::before, .face-front::after{
+    content:"";position:absolute;background:var(--line-strong);
+  }
+  .face-front::before{ /* vertical center dashed */
+    left:50%;top:8%;bottom:8%;width:1px;
+    background:repeating-linear-gradient(to bottom, var(--line-strong) 0 6px, transparent 6px 12px);
+  }
+  .face-front::after{ /* horizontal center dashed */
+    top:50%;left:8%;right:8%;height:1px;
+    background:repeating-linear-gradient(to right, var(--line-strong) 0 6px, transparent 6px 12px);
+  }
+  .hanzi{font-family:var(--font-display);font-size:64px;font-weight:700;color:var(--ink);position:relative;z-index:2;line-height:1;}
+  .tap-hint{position:absolute;bottom:14px;font-size:10px;letter-spacing:.6px;color:var(--ink-faint);text-transform:uppercase;}
+  .chop-badge{
+    position:absolute;top:12px;right:12px;background:var(--seal);color:#f3ece0;
+    font-family:var(--font-display);font-size:10px;font-weight:700;padding:4px 7px;border-radius:3px;
+    transform:rotate(6deg);box-shadow:0 1px 2px rgba(0,0,0,.3);letter-spacing:.4px;
+  }
+  .chop-badge.chop-badge-vida{background:var(--jade);}
+
+  .face-back{transform:rotateY(180deg);justify-content:flex-start;padding-top:34px;text-align:center;gap:6px;}
+  .back-pinyin{font-family:var(--font-display);font-size:22px;color:var(--seal);letter-spacing:.5px;}
+  .back-hanzi-small{font-family:var(--font-display);font-size:26px;margin-top:2px;}
+  .back-meaning{font-size:17px;font-weight:600;margin-top:14px;padding:0 10px;}
+  .back-divider{width:40px;height:1px;background:var(--line-strong);margin:16px 0;}
+  .back-example{font-size:13.5px;line-height:1.5;padding:0 14px;text-align:center;}
+  .back-example .zh{font-size:15px;margin-bottom:4px;}
+  .back-example .pt{color:var(--ink-soft);font-size:12.5px;}
+
+  .sound-btn{
+    border:1px solid var(--line-strong);background:var(--paper-raised);color:var(--ink);
+    border-radius:20px;font-family:var(--font-body);cursor:pointer;
+  }
+  .sound-word{font-family:var(--font-display);font-size:15px;font-weight:600;padding:6px 14px;margin-bottom:2px;}
+  .sound-sentence{font-size:10.5px;color:var(--ink-soft);padding:4px 10px;margin-top:10px;}
+  .sound-btn:active{background:var(--seal);color:#f3ece0;border-color:var(--seal);}
+
+  .rate-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%;max-width:340px;margin-top:24px;}
+  .rate-btn{
+    display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px;border-radius:5px;border:1px solid var(--line-strong);
+    background:var(--paper-raised);cursor:pointer;font-family:var(--font-body);color:var(--ink);
+    transition:transform .1s ease;
+  }
+  .rate-btn:active{transform:scale(.95);}
+  .rate-btn .lab{font-size:11.5px;font-weight:600;}
+  .rate-btn .days{font-size:10px;color:var(--ink-soft);margin-top:1px;}
+  .rate-btn.again{border-color:rgba(156,35,30,.4);}
+  .rate-btn.again .lab{color:var(--seal);}
+  .rate-btn.easy{border-color:rgba(79,107,92,.4);}
+  .rate-btn.easy .lab{color:var(--jade);}
+
+  .flip-cta{margin-top:22px;font-size:12px;color:var(--ink-soft);letter-spacing:.4px;text-align:center;}
+
+  /* ---------- complete screen ---------- */
+  .complete-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:58vh;text-align:center;gap:10px;}
+  .complete-glyph{font-family:var(--font-display);font-size:52px;color:var(--seal);}
+  .complete-title{font-size:18px;font-weight:700;margin-top:4px;}
+  .complete-sub{font-size:13px;color:var(--ink-soft);max-width:280px;}
+  .complete-stats{display:flex;gap:22px;margin:22px 0;}
+  .complete-stats div{text-align:center;}
+  .complete-stats .v{font-family:var(--font-display);font-size:22px;font-weight:700;}
+  .complete-stats .l{font-size:10px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.5px;}
+  .home-btn{background:var(--ink);color:var(--paper-raised);border:none;border-radius:5px;padding:12px 26px;font-size:13px;cursor:pointer;font-family:var(--font-body);}
+
+  ::selection{background:rgba(156,35,30,.2);}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ============================================================
+   DADOS: vocabulário extraído das aulas e do livro didático
+   ============================================================ */
+const DECKS = [
+  // vida real em Xangai — prioridade que você pediu
+  {id:'restaurante_delivery', name:'Restaurante e delivery', chop:'餐', tag:'vida'},
+  {id:'mercado_compras', name:'Mercado e compras', chop:'市', tag:'vida'},
+  {id:'transporte_taxi', name:'Táxi, carro e trânsito', chop:'车', tag:'vida'},
+  // conteúdo das suas aulas
+  {id:'fundamentos', name:'Fundamentos: comida e objetos', chop:'基', tag:'aulas'},
+  {id:'padroes', name:'Padrões-chave: 是 / 在 / 了', chop:'是', tag:'aulas'},
+  {id:'festivais', name:'Festivais chineses', chop:'节', tag:'aulas'},
+  {id:'relacionamentos', name:'Relacionamentos e família', chop:'情', tag:'aulas'},
+  {id:'frequencia', name:'Frequência e hábitos', chop:'常', tag:'aulas'},
+  {id:'tempo_grau', name:'Tempo, grau e cômodos', chop:'度', tag:'aulas'},
+  {id:'simultaneas', name:'Ações simultâneas: 一边...一边', chop:'边', tag:'aulas'},
+  {id:'enfase', name:'Ênfase e negação total', chop:'定', tag:'aulas'},
+  {id:'comparacoes', name:'Comparações: alto / baixo', chop:'高', tag:'aulas'},
+  {id:'verbos_regras', name:'Verbos com 打 / 开 e regras', chop:'规', tag:'aulas'},
+  {id:'pedidos', name:'Pedidos causativos: 要求 / 让 / 请', chop:'请', tag:'aulas'},
+  {id:'saude', name:'Fumar, saúde e opiniões', chop:'烟', tag:'aulas'},
+];
+
+const CARDS = [
+{id:'rd1',hanzi:'菜单',pinyin:'càidān',pt:'cardápio',ex:'请给我菜单。',expt:'Pode me trazer o cardápio, por favor?',deck:'restaurante_delivery'},
+{id:'rd2',hanzi:'服务员',pinyin:'fúwùyuán',pt:'garçom / garçonete',ex:'服务员，麻烦你！',expt:'Garçom, com licença!',deck:'restaurante_delivery'},
+{id:'rd3',hanzi:'买单',pinyin:'mǎidān',pt:'pedir a conta',ex:'麻烦买单。',expt:'A conta, por favor.',deck:'restaurante_delivery'},
+{id:'rd4',hanzi:'打包',pinyin:'dǎbāo',pt:'embalar para viagem',ex:'可以打包吗？',expt:'Dá pra embalar para viagem?',deck:'restaurante_delivery'},
+{id:'rd5',hanzi:'外卖',pinyin:'wàimài',pt:'comida para delivery',ex:'我今天点外卖。',expt:'Hoje eu vou pedir delivery.',deck:'restaurante_delivery'},
+{id:'rd6',hanzi:'美团',pinyin:'Měituán',pt:'Meituan (app de delivery mais usado)',ex:'我用美团点外卖。',expt:'Eu peço delivery pelo Meituan.',deck:'restaurante_delivery'},
+{id:'rd7',hanzi:'饿了么',pinyin:'È le me',pt:'Ele.me (outro app de delivery)',ex:'饿了么也可以点外卖。',expt:'O Ele.me também dá pra pedir delivery.',deck:'restaurante_delivery'},
+{id:'rd8',hanzi:'骑手',pinyin:'qíshǒu',pt:'entregador',ex:'骑手到了。',expt:'O entregador chegou.',deck:'restaurante_delivery'},
+{id:'rd9',hanzi:'不要辣',pinyin:'bú yào là',pt:'sem pimenta',ex:'不要辣，谢谢。',expt:'Sem pimenta, obrigado.',deck:'restaurante_delivery'},
+{id:'rd10',hanzi:'微辣',pinyin:'wēilà',pt:'pouco picante',ex:'我要微辣的。',expt:'Eu quero pouco picante.',deck:'restaurante_delivery'},
+{id:'rd11',hanzi:'香菜',pinyin:'xiāngcài',pt:'coentro',ex:'你喜欢吃香菜吗？',expt:'Você gosta de coentro?',deck:'restaurante_delivery'},
+{id:'rd12',hanzi:'不要香菜',pinyin:'bú yào xiāngcài',pt:'sem coentro',ex:'不要香菜，谢谢。',expt:'Sem coentro, obrigado.',deck:'restaurante_delivery'},
+{id:'rd13',hanzi:'打包盒',pinyin:'dǎbāohé',pt:'caixinha para viagem',ex:'请给我一个打包盒。',expt:'Me dá uma caixinha para viagem, por favor.',deck:'restaurante_delivery'},
+{id:'rd14',hanzi:'支付宝',pinyin:'Zhīfùbǎo',pt:'Alipay',ex:'我用支付宝付款。',expt:'Eu pago com Alipay.',deck:'restaurante_delivery'},
+{id:'rd15',hanzi:'微信支付',pinyin:'Wēixìn zhīfù',pt:'WeChat Pay',ex:'可以用微信支付吗？',expt:'Dá pra pagar com WeChat Pay?',deck:'restaurante_delivery'},
+{id:'rd16',hanzi:'扫码',pinyin:'sǎomǎ',pt:'escanear o QR code',ex:'请扫码付款。',expt:'Escaneie o QR code para pagar.',deck:'restaurante_delivery'},
+{id:'rd17',hanzi:'有位子吗',pinyin:'yǒu wèizi ma',pt:'tem mesa disponível?',ex:'请问有位子吗？',expt:'Com licença, tem mesa disponível?',deck:'restaurante_delivery'},
+{id:'rd18',hanzi:'麻烦你',pinyin:'máfan nǐ',pt:'com licença / desculpe incomodar',ex:'麻烦你，再来一杯水。',expt:'Com licença, mais um copo de água, por favor.',deck:'restaurante_delivery'},
+{id:'rd19',hanzi:'好吃',pinyin:'hǎochī',pt:'gostoso (comida)',ex:'这个很好吃。',expt:'Isso está muito gostoso.',deck:'restaurante_delivery'},
+{id:'rd20',hanzi:'再来一个',pinyin:'zài lái yí gè',pt:'mais um, por favor',ex:'再来一个，谢谢。',expt:'Mais um, por favor.',deck:'restaurante_delivery'},
+{id:'rd21',hanzi:'打折',pinyin:'dǎzhé',pt:'desconto',ex:'这个打折吗？',expt:'Isso está com desconto?',deck:'restaurante_delivery'},
+{id:'rd22',hanzi:'优惠券',pinyin:'yōuhuìquàn',pt:'cupom de desconto',ex:'我有优惠券。',expt:'Eu tenho um cupom.',deck:'restaurante_delivery'},
+
+{id:'mc1',hanzi:'菜市场',pinyin:'càishìchǎng',pt:'mercado de hortifruti / feira',ex:'我周末去菜市场买菜。',expt:'No fim de semana eu vou à feira comprar comida.',deck:'mercado_compras'},
+{id:'mc2',hanzi:'超市',pinyin:'chāoshì',pt:'supermercado',ex:'我去超市买水果。',expt:'Eu vou ao supermercado comprar fruta.',deck:'mercado_compras'},
+{id:'mc3',hanzi:'便宜',pinyin:'piányi',pt:'barato',ex:'这个很便宜。',expt:'Isso é bem barato.',deck:'mercado_compras'},
+{id:'mc4',hanzi:'贵',pinyin:'guì',pt:'caro',ex:'这个太贵了。',expt:'Isso está caro demais.',deck:'mercado_compras'},
+{id:'mc5',hanzi:'多少钱',pinyin:'duōshǎo qián',pt:'quanto custa?',ex:'这个多少钱？',expt:'Quanto custa isso?',deck:'mercado_compras'},
+{id:'mc6',hanzi:'便宜一点',pinyin:'piányi yìdiǎn',pt:'um pouco mais barato',ex:'可以便宜一点吗？',expt:'Dá pra fazer um precinho melhor?',deck:'mercado_compras'},
+{id:'mc7',hanzi:'称',pinyin:'chēng',pt:'pesar (na balança)',ex:'请帮我称一下。',expt:'Pode pesar para mim, por favor?',deck:'mercado_compras'},
+{id:'mc8',hanzi:'斤',pinyin:'jīn',pt:'unidade de peso (500g)',ex:'我要一斤苹果。',expt:'Eu quero meio quilo de maçã.',deck:'mercado_compras'},
+{id:'mc9',hanzi:'新鲜',pinyin:'xīnxiān',pt:'fresco',ex:'这个鱼很新鲜。',expt:'Esse peixe está bem fresco.',deck:'mercado_compras'},
+{id:'mc10',hanzi:'塑料袋',pinyin:'sùliàodài',pt:'saco plástico',ex:'我需要一个塑料袋。',expt:'Eu preciso de um saco plástico.',deck:'mercado_compras'},
+{id:'mc11',hanzi:'收银台',pinyin:'shōuyíntái',pt:'caixa (do supermercado)',ex:'收银台在哪里？',expt:'Onde fica o caixa?',deck:'mercado_compras'},
+{id:'mc12',hanzi:'会员卡',pinyin:'huìyuánkǎ',pt:'cartão de membro',ex:'你有会员卡吗？',expt:'Você tem cartão de membro?',deck:'mercado_compras'},
+{id:'mc13',hanzi:'现金',pinyin:'xiànjīn',pt:'dinheiro em espécie',ex:'我可以用现金吗？',expt:'Posso pagar em dinheiro?',deck:'mercado_compras'},
+{id:'mc14',hanzi:'找零',pinyin:'zhǎolíng',pt:'troco',ex:'请给我找零。',expt:'Me dá o troco, por favor.',deck:'mercado_compras'},
+
+{id:'tt1',hanzi:'滴滴',pinyin:'Dīdī',pt:'Didi (app de transporte mais usado)',ex:'我用滴滴叫车。',expt:'Eu chamo um carro pelo Didi.',deck:'transporte_taxi'},
+{id:'tt2',hanzi:'网约车',pinyin:'wǎngyuēchē',pt:'carro por aplicativo',ex:'网约车比出租车方便。',expt:'Carro por aplicativo é mais prático que táxi.',deck:'transporte_taxi'},
+{id:'tt3',hanzi:'打表',pinyin:'dǎbiǎo',pt:'usar o taxímetro',ex:'师傅，请打表。',expt:'Motorista, liga o taxímetro, por favor.',deck:'transporte_taxi'},
+{id:'tt4',hanzi:'师傅',pinyin:'shīfu',pt:'forma de tratar motorista/trabalhador',ex:'师傅，去机场，谢谢。',expt:'Motorista, para o aeroporto, por favor.',deck:'transporte_taxi'},
+{id:'tt5',hanzi:'加油站',pinyin:'jiāyóuzhàn',pt:'posto de gasolina',ex:'加油站在哪里？',expt:'Onde fica o posto de gasolina?',deck:'transporte_taxi'},
+{id:'tt6',hanzi:'加油',pinyin:'jiāyóu',pt:'abastecer',ex:'我需要加油。',expt:'Eu preciso abastecer.',deck:'transporte_taxi'},
+{id:'tt7',hanzi:'停车场',pinyin:'tíngchēchǎng',pt:'estacionamento',ex:'停车场在哪里？',expt:'Onde fica o estacionamento?',deck:'transporte_taxi'},
+{id:'tt8',hanzi:'违章',pinyin:'wéizhāng',pt:'infração de trânsito',ex:'闯红灯是违章。',expt:'Avançar o sinal é uma infração.',deck:'transporte_taxi'},
+{id:'tt9',hanzi:'驾照',pinyin:'jiàzhào',pt:'carteira de motorista',ex:'你有中国驾照吗？',expt:'Você tem carteira de motorista chinesa?',deck:'transporte_taxi'},
+{id:'tt10',hanzi:'车牌',pinyin:'chēpái',pt:'placa do carro',ex:'你的车牌号是多少？',expt:'Qual é a placa do seu carro?',deck:'transporte_taxi'},
+{id:'tt11',hanzi:'保险',pinyin:'bǎoxiǎn',pt:'seguro',ex:'我的车有保险。',expt:'Meu carro tem seguro.',deck:'transporte_taxi'},
+{id:'tt12',hanzi:'高速公路',pinyin:'gāosù gōnglù',pt:'rodovia / autoestrada',ex:'我们走高速公路。',expt:'A gente vai pela rodovia.',deck:'transporte_taxi'},
+{id:'tt13',hanzi:'红绿灯',pinyin:'hónglǜdēng',pt:'semáforo',ex:'前面有红绿灯。',expt:'Tem um semáforo lá na frente.',deck:'transporte_taxi'},
+{id:'tt14',hanzi:'靠边停',pinyin:'kàobiān tíng',pt:'encostar / parar no acostamento',ex:'师傅，麻烦靠边停。',expt:'Motorista, por favor encoste ali.',deck:'transporte_taxi'},
+{id:'tt15',hanzi:'系安全带',pinyin:'jì ānquándài',pt:'colocar o cinto de segurança',ex:'请系好安全带。',expt:'Por favor, coloque o cinto de segurança.',deck:'transporte_taxi'},
+{id:'tt16',hanzi:'共享单车',pinyin:'gòngxiǎng dānchē',pt:'bicicleta compartilhada',ex:'我骑共享单车上班。',expt:'Eu vou de bike compartilhada para o trabalho.',deck:'transporte_taxi'},
+
+{id:'f1',hanzi:'咖啡',pinyin:'kāfēi',pt:'café',ex:'我喜欢喝咖啡。',expt:'Eu gosto de tomar café.',deck:'fundamentos'},
+{id:'f2',hanzi:'可乐',pinyin:'kělè',pt:'refrigerante de cola',ex:'你喜欢喝什么？可乐还是果汁？',expt:'O que você gosta de beber? Refrigerante ou suco?',deck:'fundamentos'},
+{id:'f3',hanzi:'牛奶',pinyin:'niúnǎi',pt:'leite',ex:'我喜欢喝牛奶。',expt:'Eu gosto de tomar leite.',deck:'fundamentos'},
+{id:'f4',hanzi:'果汁',pinyin:'guǒzhī',pt:'suco de fruta',ex:'你喜欢喝果汁吗？',expt:'Você gosta de tomar suco?',deck:'fundamentos'},
+{id:'f5',hanzi:'芒果汁',pinyin:'mángguǒzhī',pt:'suco de manga',ex:'我喜欢喝芒果汁。',expt:'Eu gosto de tomar suco de manga.',deck:'fundamentos'},
+{id:'f6',hanzi:'橙汁',pinyin:'chéngzhī',pt:'suco de laranja',ex:'我不喜欢喝橙汁。',expt:'Eu não gosto de tomar suco de laranja.',deck:'fundamentos'},
+{id:'f7',hanzi:'包子',pinyin:'bāozi',pt:'pão no vapor recheado',ex:'我喜欢吃包子。',expt:'Eu gosto de comer bāozi.',deck:'fundamentos'},
+{id:'f8',hanzi:'煎包',pinyin:'jiānbāo',pt:'pão frito recheado',ex:'你喜欢吃煎包吗？',expt:'Você gosta de comer pão frito?',deck:'fundamentos'},
+{id:'f9',hanzi:'素包子',pinyin:'sù bāozi',pt:'pão de vapor vegetariano',ex:'我在吃素包子。',expt:'Eu estou comendo pão de vapor vegetariano.',deck:'fundamentos'},
+{id:'f10',hanzi:'喜欢',pinyin:'xǐhuān',pt:'gostar de',ex:'你喜欢吃什么？',expt:'O que você gosta de comer?',deck:'fundamentos'},
+{id:'f11',hanzi:'模特',pinyin:'mótè',pt:'modelo (profissão)',ex:'她是模特。',expt:'Ela é modelo.',deck:'fundamentos'},
+{id:'f12',hanzi:'老师',pinyin:'lǎoshī',pt:'professor(a)',ex:'她是我的汉语老师。',expt:'Ela é minha professora de chinês.',deck:'fundamentos'},
+{id:'f13',hanzi:'学生',pinyin:'xuéshēng',pt:'estudante',ex:'我是汉语学生。',expt:'Eu sou estudante de chinês.',deck:'fundamentos'},
+{id:'f14',hanzi:'医生',pinyin:'yīshēng',pt:'médico(a)',ex:'他是医生。',expt:'Ele é médico.',deck:'fundamentos'},
+{id:'f15',hanzi:'三明治',pinyin:'sānmíngzhì',pt:'sanduíche',ex:'我喜欢吃三明治。',expt:'Eu gosto de comer sanduíche.',deck:'fundamentos'},
+{id:'f16',hanzi:'杯子',pinyin:'bēizi',pt:'copo / xícara',ex:'这是杯子。',expt:'Isso é um copo.',deck:'fundamentos'},
+{id:'f17',hanzi:'笔',pinyin:'bǐ',pt:'caneta',ex:'你可以给我笔吗？',expt:'Você pode me dar uma caneta?',deck:'fundamentos'},
+{id:'f18',hanzi:'瓶子',pinyin:'píngzi',pt:'garrafa',ex:'这是水瓶，不是杯子。',expt:'Isso é uma garrafa de água, não um copo.',deck:'fundamentos'},
+{id:'f19',hanzi:'水',pinyin:'shuǐ',pt:'água',ex:'你可以给我水吗？',expt:'Você pode me dar água?',deck:'fundamentos'},
+{id:'f20',hanzi:'水瓶',pinyin:'shuǐpíng',pt:'garrafa de água',ex:'这是最后一瓶水。',expt:'Essa é a última garrafa de água.',deck:'fundamentos'},
+{id:'f21',hanzi:'手机',pinyin:'shǒujī',pt:'celular',ex:'一定不要忘记你的手机。',expt:'Não esqueça seu celular de jeito nenhum.',deck:'fundamentos'},
+{id:'f22',hanzi:'手',pinyin:'shǒu',pt:'mão',ex:'把东西放在我手里。',expt:'Coloque a coisa na minha mão.',deck:'fundamentos'},
+{id:'f23',hanzi:'书',pinyin:'shū',pt:'livro',ex:'这是我的书。',expt:'Este é o meu livro.',deck:'fundamentos'},
+{id:'f24',hanzi:'衣服',pinyin:'yīfu',pt:'roupa',ex:'那是我的衣服。',expt:'Aquela é a minha roupa.',deck:'fundamentos'},
+{id:'f25',hanzi:'汉语',pinyin:'Hànyǔ',pt:'chinês (idioma)',ex:'我在学习汉语。',expt:'Estou aprendendo chinês.',deck:'fundamentos'},
+
+{id:'p1',hanzi:'是',pinyin:'shì',pt:'ser',ex:'我是巴西人。',expt:'Eu sou brasileiro.',deck:'padroes'},
+{id:'p2',hanzi:'不是',pinyin:'bú shì',pt:'não ser',ex:'我不是中国人，我是巴西人。',expt:'Eu não sou chinês, sou brasileiro.',deck:'padroes'},
+{id:'p3',hanzi:'在',pinyin:'zài',pt:'(ação contínua) / estar em',ex:'我在学习中文，一边喝咖啡。',expt:'Estou aprendendo chinês enquanto tomo café.',deck:'padroes'},
+{id:'p4',hanzi:'了',pinyin:'le',pt:'(partícula de ação concluída)',ex:'你吃了吗？',expt:'Você já comeu?',deck:'padroes'},
+{id:'p5',hanzi:'朋友',pinyin:'péngyou',pt:'amigo(a)',ex:'他们是我的朋友。',expt:'Eles são meus amigos.',deck:'padroes'},
+{id:'p6',hanzi:'商人',pinyin:'shāngrén',pt:'empresário / comerciante',ex:'他是商人。',expt:'Ele é empresário.',deck:'padroes'},
+{id:'p7',hanzi:'妻子',pinyin:'qīzi',pt:'esposa',ex:'她是我的妻子。',expt:'Ela é minha esposa.',deck:'padroes'},
+{id:'p8',hanzi:'中文',pinyin:'Zhōngwén',pt:'chinês (idioma)',ex:'中文=汉语。',expt:'Zhōngwén e Hànyǔ são o mesmo idioma.',deck:'padroes'},
+
+{id:'e1',hanzi:'春节',pinyin:'Chūnjié',pt:'Festival da Primavera / Ano Novo Chinês',ex:'春节快到了。',expt:'O Ano Novo Chinês está chegando.',deck:'festivais'},
+{id:'e2',hanzi:'除夕',pinyin:'chúxī',pt:'véspera do Ano Novo Chinês',ex:'除夕我们一起吃饭。',expt:'Na véspera do Ano Novo, comemos juntos.',deck:'festivais'},
+{id:'e3',hanzi:'红包',pinyin:'hóngbāo',pt:'envelope vermelho (dinheiro de presente)',ex:'我给孩子们红包。',expt:'Eu dou envelopes vermelhos para as crianças.',deck:'festivais'},
+{id:'e4',hanzi:'中秋节',pinyin:'Zhōngqiūjié',pt:'Festival do Meio do Outono',ex:'你喜欢中秋节吗？',expt:'Você gosta do Festival do Meio do Outono?',deck:'festivais'},
+{id:'e5',hanzi:'灯笼',pinyin:'dēnglong',pt:'lanterna',ex:'中秋节有很多灯笼。',expt:'No Festival do Meio do Outono tem muitas lanternas.',deck:'festivais'},
+{id:'e6',hanzi:'红灯笼',pinyin:'hóng dēnglong',pt:'lanterna vermelha',ex:'我看到了红灯笼。',expt:'Eu vi lanternas vermelhas.',deck:'festivais'},
+{id:'e7',hanzi:'黄灯笼',pinyin:'huáng dēnglong',pt:'lanterna amarela',ex:'那是黄灯笼。',expt:'Aquela é uma lanterna amarela.',deck:'festivais'},
+{id:'e8',hanzi:'月饼',pinyin:'yuèbǐng',pt:'bolinho da lua (mooncake)',ex:'你喜欢吃月饼吗？',expt:'Você gosta de comer mooncake?',deck:'festivais'},
+{id:'e9',hanzi:'甜的',pinyin:'tián de',pt:'doce',ex:'我喜欢吃甜的月饼。',expt:'Eu gosto de comer mooncake doce.',deck:'festivais'},
+{id:'e10',hanzi:'咸的',pinyin:'xián de',pt:'salgado',ex:'我喜欢吃咸的月饼。',expt:'Eu gosto de comer mooncake salgado.',deck:'festivais'},
+{id:'e11',hanzi:'酸的',pinyin:'suān de',pt:'azedo',ex:'你喜欢喝酸的吗？',expt:'Você gosta de tomar algo azedo?',deck:'festivais'},
+{id:'e12',hanzi:'辣的',pinyin:'là de',pt:'picante',ex:'我从来不吃辣菜。',expt:'Eu nunca como comida picante.',deck:'festivais'},
+{id:'e13',hanzi:'冰的',pinyin:'bīng de',pt:'gelado',ex:'我喜欢喝冰的水。',expt:'Eu gosto de tomar água gelada.',deck:'festivais'},
+
+{id:'r1',hanzi:'女朋友',pinyin:'nǚpéngyou',pt:'namorada',ex:'我有女朋友。',expt:'Eu tenho namorada.',deck:'relacionamentos'},
+{id:'r2',hanzi:'男朋友',pinyin:'nánpéngyou',pt:'namorado',ex:'他们是男女朋友。',expt:'Eles são namorado e namorada.',deck:'relacionamentos'},
+{id:'r3',hanzi:'丈夫',pinyin:'zhàngfu',pt:'marido',ex:'他们是夫妻。',expt:'Eles são marido e mulher.',deck:'relacionamentos'},
+{id:'r4',hanzi:'夫妻',pinyin:'fūqī',pt:'casal (marido e mulher)',ex:'他们是夫妻。',expt:'Eles são um casal.',deck:'relacionamentos'},
+
+{id:'q1',hanzi:'从来没...过',pinyin:'cónglái méi...guò',pt:'nunca (fiz algo, na vida)',ex:'我从来没去过日本。',expt:'Eu nunca fui ao Japão.',deck:'frequencia'},
+{id:'q2',hanzi:'从来不',pinyin:'cónglái bù',pt:'nunca (por hábito)',ex:'我从来不吃辣菜。',expt:'Eu nunca como comida picante.',deck:'frequencia'},
+{id:'q3',hanzi:'把',pinyin:'bǎ',pt:'(construção "ba": pega X e...)',ex:'把东西放在门口。',expt:'Coloque a coisa na porta.',deck:'frequencia'},
+{id:'q4',hanzi:'一般',pinyin:'yìbān',pt:'normalmente, geralmente',ex:'我一般在工作前有中文课。',expt:'Normalmente tenho aula de chinês antes do trabalho.',deck:'frequencia'},
+{id:'q5',hanzi:'熬夜',pinyin:'áoyè',pt:'virar a noite / dormir tarde',ex:'我几乎从不熬夜。',expt:'Eu quase nunca durmo tarde.',deck:'frequencia'},
+{id:'q6',hanzi:'喝酒',pinyin:'hē jiǔ',pt:'beber álcool',ex:'和朋友出去玩你喝酒吗？',expt:'Quando sai com amigos, você bebe?',deck:'frequencia'},
+{id:'q7',hanzi:'啤酒',pinyin:'píjiǔ',pt:'cerveja',ex:'我一般喝啤酒。',expt:'Eu geralmente bebo cerveja.',deck:'frequencia'},
+{id:'q8',hanzi:'榴莲',pinyin:'liúlián',pt:'durian',ex:'我从不吃榴莲。',expt:'Eu nunca como durian.',deck:'frequencia'},
+{id:'q9',hanzi:'点外卖',pinyin:'diǎn wàimài',pt:'pedir comida por delivery',ex:'我有时候点外卖。',expt:'Às vezes eu peço delivery.',deck:'frequencia'},
+{id:'q10',hanzi:'运动',pinyin:'yùndòng',pt:'se exercitar',ex:'我周末一般运动。',expt:'Nos fins de semana eu geralmente me exercito.',deck:'frequencia'},
+{id:'q11',hanzi:'水果',pinyin:'shuǐguǒ',pt:'fruta',ex:'我一般饭后吃水果。',expt:'Eu geralmente como fruta depois das refeições.',deck:'frequencia'},
+{id:'q12',hanzi:'通常',pinyin:'tōngcháng',pt:'normalmente, costumeiramente',ex:'我通常早上喝咖啡。',expt:'Eu normalmente tomo café de manhã.',deck:'frequencia'},
+
+{id:'t1',hanzi:'最后',pinyin:'zuìhòu',pt:'o último / a última',ex:'昨天是六月的最后一天。',expt:'Ontem foi o último dia de junho.',deck:'tempo_grau'},
+{id:'t2',hanzi:'度',pinyin:'dù',pt:'grau',ex:'今天几度？',expt:'Quantos graus está hoje?',deck:'tempo_grau'},
+{id:'t3',hanzi:'间',pinyin:'jiān',pt:'(medidor para cômodos)',ex:'我家有两间卧室。',expt:'Minha casa tem dois quartos.',deck:'tempo_grau'},
+{id:'t4',hanzi:'卧室',pinyin:'wòshì',pt:'quarto',ex:'我家有两间卧室。',expt:'Minha casa tem dois quartos.',deck:'tempo_grau'},
+{id:'t5',hanzi:'厨房',pinyin:'chúfáng',pt:'cozinha',ex:'这是厨房。',expt:'Esta é a cozinha.',deck:'tempo_grau'},
+{id:'t6',hanzi:'发烧',pinyin:'fāshāo',pt:'ter febre',ex:'我发烧38度。',expt:'Estou com febre de 38 graus.',deck:'tempo_grau'},
+{id:'t7',hanzi:'一定',pinyin:'yídìng',pt:'com certeza, definitivamente',ex:'下次我一定早点来。',expt:'Da próxima vez com certeza vou chegar mais cedo.',deck:'tempo_grau'},
+{id:'t8',hanzi:'记住',pinyin:'jìzhù',pt:'memorizar, gravar na memória',ex:'下次我一定要记住新词。',expt:'Da próxima vez vou memorizar as palavras novas com certeza.',deck:'tempo_grau'},
+{id:'t9',hanzi:'新词',pinyin:'xīncí',pt:'palavra nova',ex:'下次我一定要记住新词。',expt:'Da próxima vez vou memorizar as palavras novas com certeza.',deck:'tempo_grau'},
+{id:'t10',hanzi:'堵车',pinyin:'dǔchē',pt:'engarrafamento',ex:'今天堵车了。',expt:'Hoje teve engarrafamento.',deck:'tempo_grau'},
+{id:'t11',hanzi:'打车',pinyin:'dǎchē',pt:'pegar um táxi',ex:'今天我打车来的。',expt:'Hoje eu vim de táxi.',deck:'tempo_grau'},
+{id:'t12',hanzi:'房子',pinyin:'fángzi',pt:'casa',ex:'我一定要在上海买房子。',expt:'Com certeza vou comprar uma casa em Xangai.',deck:'tempo_grau'},
+{id:'t13',hanzi:'中午',pinyin:'zhōngwǔ',pt:'meio-dia',ex:'中午我们吃什么？',expt:'O que a gente come ao meio-dia?',deck:'tempo_grau'},
+{id:'t14',hanzi:'病',pinyin:'bìng',pt:'doença',ex:'生病了要去医院。',expt:'Quando fica doente, precisa ir ao hospital.',deck:'tempo_grau'},
+{id:'t15',hanzi:'病人',pinyin:'bìngrén',pt:'paciente',ex:'医院里有很多病人。',expt:'Tem muitos pacientes no hospital.',deck:'tempo_grau'},
+{id:'t16',hanzi:'生病',pinyin:'shēngbìng',pt:'ficar doente',ex:'星期天，他因为心脏病去了医院。',expt:'No domingo, ele foi ao hospital por causa de um problema cardíaco.',deck:'tempo_grau'},
+{id:'t17',hanzi:'病假',pinyin:'bìngjià',pt:'licença médica',ex:'我今天请病假。',expt:'Hoje eu tirei licença médica.',deck:'tempo_grau'},
+{id:'t18',hanzi:'病房',pinyin:'bìngfáng',pt:'enfermaria',ex:'这是病房。',expt:'Esta é a enfermaria.',deck:'tempo_grau'},
+{id:'t19',hanzi:'出租车',pinyin:'chūzūchē',pt:'táxi',ex:'坐出租车比较贵。',expt:'Pegar táxi é relativamente caro.',deck:'tempo_grau'},
+{id:'t20',hanzi:'司机',pinyin:'sījī',pt:'motorista',ex:'司机在开车。',expt:'O motorista está dirigindo.',deck:'tempo_grau'},
+
+{id:'s1',hanzi:'一边...一边...',pinyin:'yìbiān...yìbiān...',pt:'fazer duas coisas ao mesmo tempo',ex:'我一边喝咖啡一边工作。',expt:'Eu trabalho enquanto tomo café.',deck:'simultaneas'},
+{id:'s2',hanzi:'唱歌',pinyin:'chànggē',pt:'cantar',ex:'她一边唱歌一边跳舞。',expt:'Ela canta enquanto dança.',deck:'simultaneas'},
+{id:'s3',hanzi:'跳舞',pinyin:'tiàowǔ',pt:'dançar',ex:'别的巴西人喜欢跳舞。',expt:'Outros brasileiros gostam de dançar.',deck:'simultaneas'},
+{id:'s4',hanzi:'做饭',pinyin:'zuòfàn',pt:'cozinhar',ex:'我老婆一边做饭，一边唱歌。',expt:'Minha esposa cozinha enquanto canta.',deck:'simultaneas'},
+{id:'s5',hanzi:'视频',pinyin:'shìpín',pt:'vídeo',ex:'我比较喜欢看视频。',expt:'Eu prefiro assistir vídeos.',deck:'simultaneas'},
+{id:'s6',hanzi:'电影',pinyin:'diànyǐng',pt:'filme',ex:'我更喜欢看电影。',expt:'Eu prefiro ainda mais assistir filmes.',deck:'simultaneas'},
+{id:'s7',hanzi:'比较',pinyin:'bǐjiào',pt:'relativamente / comparar',ex:'我比较喜欢看视频。',expt:'Eu prefiro (relativamente) assistir vídeos.',deck:'simultaneas'},
+{id:'s8',hanzi:'更',pinyin:'gèng',pt:'ainda mais',ex:'我更喜欢看视频。',expt:'Eu prefiro ainda mais assistir vídeos.',deck:'simultaneas'},
+
+{id:'n1',hanzi:'忘记',pinyin:'wàngjì',pt:'esquecer',ex:'一定不要忘记带伞。',expt:'Não esqueça de trazer o guarda-chuva de jeito nenhum.',deck:'enfase'},
+{id:'n2',hanzi:'伞',pinyin:'sǎn',pt:'guarda-chuva',ex:'一定不要忘记带伞。',expt:'Não esqueça de trazer o guarda-chuva de jeito nenhum.',deck:'enfase'},
+{id:'n3',hanzi:'一...也/都不/没...',pinyin:'yī...yě/dōu bù/méi...',pt:'nem um pouco / nenhum',ex:'我一杯咖啡也不想喝。',expt:'Eu não quero tomar nem um copo de café.',deck:'enfase'},
+{id:'n4',hanzi:'一点儿...也/都不/没...',pinyin:'yìdiǎnr...yě/dōu bù/méi...',pt:'absolutamente nada',ex:'我一点儿也不想吃。',expt:'Eu não quero comer absolutamente nada.',deck:'enfase'},
+{id:'n5',hanzi:'什么都没',pinyin:'shénme dōu méi',pt:'nada mesmo',ex:'昨天我回家吃午饭，什么都没买。',expt:'Ontem fui pra casa almoçar e não comprei nada.',deck:'enfase'},
+
+{id:'c1',hanzi:'高',pinyin:'gāo',pt:'alto',ex:'这个大厦很高。',expt:'Este prédio é muito alto.',deck:'comparacoes'},
+{id:'c2',hanzi:'矮',pinyin:'ǎi',pt:'baixo (altura)',ex:'那个房子很矮。',expt:'Aquela casa é baixa.',deck:'comparacoes'},
+{id:'c3',hanzi:'低',pinyin:'dī',pt:'baixo (temperatura/nível)',ex:'昨天温度低。',expt:'Ontem a temperatura estava baixa.',deck:'comparacoes'},
+{id:'c4',hanzi:'座',pinyin:'zuò',pt:'(medidor para montanhas)',ex:'这座山很高。',expt:'Esta montanha é alta.',deck:'comparacoes'},
+{id:'c5',hanzi:'办公室',pinyin:'bàngōngshì',pt:'escritório',ex:'你有一间自己的办公室。',expt:'Você tem um escritório próprio.',deck:'comparacoes'},
+{id:'c6',hanzi:'一点都不',pinyin:'yìdiǎn dōu bù',pt:'nem um pouco',ex:'我一点都不饿。',expt:'Eu não estou nem um pouco com fome.',deck:'comparacoes'},
+
+{id:'v1',hanzi:'开门',pinyin:'kāimén',pt:'abrir a porta',ex:'请开门。',expt:'Por favor, abra a porta.',deck:'verbos_regras'},
+{id:'v2',hanzi:'开始',pinyin:'kāishǐ',pt:'começar',ex:'我们开始吧。',expt:'Vamos começar.',deck:'verbos_regras'},
+{id:'v3',hanzi:'开户',pinyin:'kāihù',pt:'abrir uma conta bancária',ex:'我想在中国开户。',expt:'Eu quero abrir uma conta na China.',deck:'verbos_regras'},
+{id:'v4',hanzi:'开会',pinyin:'kāihuì',pt:'fazer uma reunião',ex:'我们在开会。',expt:'Estamos em reunião.',deck:'verbos_regras'},
+{id:'v5',hanzi:'开车',pinyin:'kāichē',pt:'dirigir',ex:'我开车上班。',expt:'Eu dirijo para o trabalho.',deck:'verbos_regras'},
+{id:'v6',hanzi:'申请',pinyin:'shēnqǐng',pt:'solicitar, requerer',ex:'我想在中国开车，但是我需要申请。',expt:'Quero dirigir na China, mas preciso solicitar a habilitação.',deck:'verbos_regras'},
+{id:'v7',hanzi:'打电话',pinyin:'dǎ diànhuà',pt:'fazer uma ligação',ex:'你常常在办公室打电话吗？',expt:'Você costuma fazer ligações no escritório?',deck:'verbos_regras'},
+{id:'v8',hanzi:'常常',pinyin:'chángcháng',pt:'frequentemente',ex:'我常常打电话给巴西的同事。',expt:'Eu costumo ligar para meus colegas brasileiros.',deck:'verbos_regras'},
+{id:'v9',hanzi:'同事',pinyin:'tóngshì',pt:'colega de trabalho',ex:'我常常打电话给巴西的同事。',expt:'Eu costumo ligar para meus colegas brasileiros.',deck:'verbos_regras'},
+{id:'v10',hanzi:'打人',pinyin:'dǎrén',pt:'bater em alguém',ex:'打人是违法的。',expt:'Bater em alguém é ilegal.',deck:'verbos_regras'},
+{id:'v11',hanzi:'打网球',pinyin:'dǎ wǎngqiú',pt:'jogar tênis',ex:'我周末打网球。',expt:'Eu jogo tênis no fim de semana.',deck:'verbos_regras'},
+{id:'v12',hanzi:'篮球',pinyin:'lánqiú',pt:'basquete',ex:'我篮球打得不好。',expt:'Eu não jogo bem basquete.',deck:'verbos_regras'},
+{id:'v13',hanzi:'羽毛球',pinyin:'yǔmáoqiú',pt:'badminton',ex:'我从来没打过羽毛球。',expt:'Eu nunca joguei badminton.',deck:'verbos_regras'},
+{id:'v14',hanzi:'踢足球',pinyin:'tī zúqiú',pt:'jogar futebol',ex:'你喜欢踢足球吗？',expt:'Você gosta de jogar futebol?',deck:'verbos_regras'},
+{id:'v15',hanzi:'危险',pinyin:'wēixiǎn',pt:'perigoso',ex:'闯红灯很危险。',expt:'Avançar o sinal vermelho é perigoso.',deck:'verbos_regras'},
+{id:'v16',hanzi:'闯红灯',pinyin:'chuǎng hóngdēng',pt:'avançar o sinal vermelho',ex:'闯红灯是违法的。',expt:'Avançar o sinal vermelho é ilegal.',deck:'verbos_regras'},
+{id:'v17',hanzi:'规定',pinyin:'guīdìng',pt:'regra / estipular',ex:'公司规定9点上班，6点下班。',expt:'A empresa determina que o expediente é das 9h às 18h.',deck:'verbos_regras'},
+{id:'v18',hanzi:'遵守',pinyin:'zūnshǒu',pt:'obedecer, seguir (regras)',ex:'我一直遵守规定。',expt:'Eu sempre sigo as regras.',deck:'verbos_regras'},
+{id:'v19',hanzi:'上班',pinyin:'shàngbān',pt:'começar o trabalho',ex:'你几点上班？',expt:'Que horas você começa a trabalhar?',deck:'verbos_regras'},
+{id:'v20',hanzi:'下班',pinyin:'xiàbān',pt:'sair do trabalho',ex:'你几点下班？',expt:'Que horas você sai do trabalho?',deck:'verbos_regras'},
+{id:'v21',hanzi:'违法',pinyin:'wéifǎ',pt:'ilegal',ex:'这是违法的。',expt:'Isso é ilegal.',deck:'verbos_regras'},
+
+{id:'d1',hanzi:'要求',pinyin:'yāoqiú',pt:'pedir/exigir que alguém faça algo',ex:'我要求秘书买水。',expt:'Eu pedi para a secretária comprar água.',deck:'pedidos'},
+{id:'d2',hanzi:'教',pinyin:'jiāo',pt:'ensinar',ex:'我让徐老师教我新词。',expt:'Eu deixo o professor Xu me ensinar palavras novas.',deck:'pedidos'},
+{id:'d3',hanzi:'让',pinyin:'ràng',pt:'deixar/fazer alguém fazer algo',ex:'我让徐老师教我新词。',expt:'Eu deixo o professor Xu me ensinar palavras novas.',deck:'pedidos'},
+{id:'d4',hanzi:'请',pinyin:'qǐng',pt:'pedir educadamente / por favor',ex:'我请徐老师教我新词。',expt:'Eu peço educadamente ao professor Xu para me ensinar palavras novas.',deck:'pedidos'},
+{id:'d5',hanzi:'秘书',pinyin:'mìshū',pt:'secretário(a)',ex:'我要求秘书买水。',expt:'Eu pedi para a secretária comprar água.',deck:'pedidos'},
+{id:'d6',hanzi:'停',pinyin:'tíng',pt:'parar (+ substantivo)',ex:'停电，停水。',expt:'Falta de energia, corte de água.',deck:'pedidos'},
+{id:'d7',hanzi:'停电',pinyin:'tíngdiàn',pt:'falta de energia',ex:'今天停电了。',expt:'Hoje faltou energia.',deck:'pedidos'},
+{id:'d8',hanzi:'停水',pinyin:'tíngshuǐ',pt:'corte de água',ex:'这里停水了。',expt:'Aqui cortou a água.',deck:'pedidos'},
+{id:'d9',hanzi:'停止',pinyin:'tíngzhǐ',pt:'parar (+ verbo)',ex:'下班了，我停止工作。',expt:'Depois do expediente, eu paro de trabalhar.',deck:'pedidos'},
+
+{id:'h1',hanzi:'苦',pinyin:'kǔ',pt:'amargo',ex:'咖啡有一点苦味。',expt:'O café tem um gostinho amargo.',deck:'saude'},
+{id:'h2',hanzi:'烟味',pinyin:'yānwèi',pt:'cheiro de cigarro',ex:'这里有烟味。',expt:'Tem cheiro de cigarro aqui.',deck:'saude'},
+{id:'h3',hanzi:'禁烟',pinyin:'jìnyān',pt:'proibido fumar',ex:'这个大厦禁烟。',expt:'Fumar é proibido neste prédio.',deck:'saude'},
+{id:'h4',hanzi:'抽烟',pinyin:'chōuyān',pt:'fumar',ex:'抽烟对身体不好。',expt:'Fumar não é bom para a saúde.',deck:'saude'},
+{id:'h5',hanzi:'身体',pinyin:'shēntǐ',pt:'corpo / saúde',ex:'抽烟对身体不好。',expt:'Fumar não é bom para a saúde.',deck:'saude'},
+{id:'h6',hanzi:'记得',pinyin:'jìde',pt:'lembrar',ex:'我记得和我们的客户吃晚饭。',expt:'Eu me lembro de ter jantado com nosso cliente.',deck:'saude'},
+{id:'h7',hanzi:'客户',pinyin:'kèhù',pt:'cliente',ex:'我记得和我们的客户吃晚饭。',expt:'Eu me lembro de ter jantado com nosso cliente.',deck:'saude'},
+{id:'h8',hanzi:'突然',pinyin:'tūrán',pt:'de repente',ex:'客户喝了一点白酒，突然脸就很红。',expt:'O cliente bebeu um pouco de baijiu e de repente o rosto ficou vermelho.',deck:'saude'},
+{id:'h9',hanzi:'别的',pinyin:'bié de',pt:'outro(s)',ex:'别的中国人喜欢抽烟。',expt:'Outros chineses gostam de fumar.',deck:'saude'},
+{id:'h10',hanzi:'讨厌',pinyin:'tǎoyàn',pt:'detestar',ex:'我讨厌烟味。',expt:'Eu detesto cheiro de cigarro.',deck:'saude'},
+{id:'h11',hanzi:'影响',pinyin:'yǐngxiǎng',pt:'afetar, influenciar',ex:'抽烟影响身体。',expt:'Fumar afeta a saúde.',deck:'saude'},
+{id:'h12',hanzi:'戒指',pinyin:'jièzhi',pt:'anel',ex:'这是我的戒指。',expt:'Este é o meu anel.',deck:'saude'},
+{id:'h13',hanzi:'戒烟',pinyin:'jièyān',pt:'parar de fumar',ex:'我想戒烟。',expt:'Eu quero parar de fumar.',deck:'saude'},
+{id:'h14',hanzi:'别人',pinyin:'biéren',pt:'outras pessoas',ex:'这是别人的。',expt:'Isso é de outra pessoa.',deck:'saude'},
+{id:'h15',hanzi:'农场',pinyin:'nóngchǎng',pt:'fazenda',ex:'我想买一个农场。',expt:'Eu quero comprar uma fazenda.',deck:'saude'},
+{id:'h16',hanzi:'地铁',pinyin:'dìtiě',pt:'metrô',ex:'坐地铁可以避免堵车。',expt:'Pegar o metrô pode evitar engarrafamento.',deck:'saude'},
+{id:'h17',hanzi:'避免',pinyin:'bìmiǎn',pt:'evitar',ex:'坐地铁可以避免堵车。',expt:'Pegar o metrô pode evitar engarrafamento.',deck:'saude'},
+];
+
+/* ============================================================
+   ÁUDIO: pronúncia via voz nativa do navegador
+   ============================================================ */
+let ttsVoices = [];
+let ttsAvailable = ('speechSynthesis' in window);
+function loadVoices(){ if(ttsAvailable) ttsVoices = window.speechSynthesis.getVoices(); }
+if(ttsAvailable){
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+}
+function pickZhVoice(){
+  return ttsVoices.find(v => v.lang && v.lang.toLowerCase().startsWith('zh')) || null;
+}
+function speak(text){
+  if(!ttsAvailable || !text) return;
+  try{
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'zh-CN';
+    const v = pickZhVoice();
+    if(v) u.voice = v;
+    u.rate = 0.88;
+    window.speechSynthesis.speak(u);
+  }catch(e){ /* TTS indisponível neste navegador, segue sem som */ }
+}
+
+/* ============================================================
+   ESTADO E PERSISTÊNCIA
+   ============================================================ */
+const STORAGE_KEY = 'srs-state-v1';
+let state = null;
+let currentQueue = [];
+let currentIndex = 0;
+let sessionReviewed = 0;
+let sessionDeckFilter = null;
+
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function addDays(dateStr, n){
+  const d = new Date(dateStr + 'T00:00:00');
+  d.setDate(d.getDate() + n);
+  return d.toISOString().slice(0,10);
+}
+function daysBetween(a,b){
+  return Math.round((new Date(b+'T00:00:00') - new Date(a+'T00:00:00')) / 86400000);
+}
+
+function defaultState(){
+  return { cards:{}, meta:{ newPerDay:15, streak:0, lastStudyDate:null, totalReviews:0 } };
+}
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return JSON.parse(raw);
+    return defaultState();
+  }catch(e){
+    return defaultState();
+  }
+}
+function saveState(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  catch(e){ /* localStorage indisponível (modo privado?) ou cheio: segue sem salvar */ }
+}
+
+function getCardState(id){
+  if(!state.cards[id]) state.cards[id] = { interval:null, ease:2.5, reps:0, due:null };
+  return state.cards[id];
+}
+
+function isDue(cs){
+  if(cs.interval === null) return false; // é "novo", tratado à parte
+  return cs.due <= todayStr();
+}
+function isNew(cs){ return cs.interval === null; }
+
+/* Calcula os 4 prazos garantindo sempre Esqueci < Difícil < Bom < Fácil,
+   mesmo em cartões novos (onde antes Difícil e Bom colidiam). */
+function computeIntervals(cs){
+  const again = 1;
+  let good, hard, easy;
+  if(cs.reps === 0){
+    // primeira vez que este cartão recebe uma resposta positiva
+    hard = 2; good = 3; easy = 5;
+  } else if(cs.reps === 1){
+    hard = 4; good = 6; easy = 9;
+  } else {
+    const prevInt = cs.interval || 6;
+    good = Math.max(4, Math.round(prevInt * cs.ease));
+    hard = Math.max(2, Math.min(good - 1, Math.round(good * 0.65)));
+    easy = Math.max(good + 1, Math.round(good * 1.3));
+  }
+  return {again, hard, good, easy};
+}
+function previewIntervals(cs){ return computeIntervals(cs); }
+
+function rateCard(cardId, rating){
+  const cs = getCardState(cardId);
+  const iv = computeIntervals(cs);
+  if(rating === 0){ // Esqueci
+    cs.reps = 0;
+    cs.interval = iv.again;
+    cs.ease = Math.max(1.3, cs.ease - 0.2);
+    cs.due = todayStr(); // reaparece ainda nesta sessão / hoje
+  } else if(rating === 1){ // Difícil
+    cs.interval = iv.hard;
+    cs.ease = Math.max(1.3, cs.ease - 0.15);
+    cs.reps += 1;
+    cs.due = addDays(todayStr(), cs.interval);
+  } else if(rating === 2){ // Bom
+    cs.interval = iv.good;
+    cs.reps += 1;
+    cs.due = addDays(todayStr(), cs.interval);
+  } else { // Fácil
+    cs.interval = iv.easy;
+    cs.ease = cs.ease + 0.1;
+    cs.reps += 1;
+    cs.due = addDays(todayStr(), cs.interval);
+  }
+  state.meta.totalReviews += 1;
+  updateStreak();
+}
+
+function updateStreak(){
+  const t = todayStr();
+  if(state.meta.lastStudyDate === t) return;
+  if(state.meta.lastStudyDate === addDays(t,-1)){ state.meta.streak += 1; }
+  else { state.meta.streak = 1; }
+  state.meta.lastStudyDate = t;
+}
+
+/* ============================================================
+   CONSTRUÇÃO DAS FILAS DE ESTUDO
+   ============================================================ */
+function buildQueue(deckId){
+  const pool = deckId ? CARDS.filter(c=>c.deck===deckId) : CARDS;
+  const due = [];
+  const news = [];
+  pool.forEach(c=>{
+    const cs = getCardState(c.id);
+    if(isNew(cs)) news.push(c);
+    else if(isDue(cs)) due.push(c);
+  });
+  // embaralha os "due" para intercalar decks
+  for(let i=due.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [due[i],due[j]]=[due[j],due[i]]; }
+  const limit = state.meta.newPerDay;
+  const newsToAdd = news.slice(0, Math.max(0, limit));
+  return due.concat(newsToAdd);
+}
+
+function deckStats(deckId){
+  const pool = CARDS.filter(c=>c.deck===deckId);
+  let due=0, news=0, learned=0;
+  pool.forEach(c=>{
+    const cs = getCardState(c.id);
+    if(isNew(cs)) news++;
+    else { if(isDue(cs)) due++; if(cs.reps>=3) learned++; }
+  });
+  return {total:pool.length, due, news, learned};
+}
+
+function globalStats(){
+  let due=0, news=0;
+  CARDS.forEach(c=>{
+    const cs = getCardState(c.id);
+    if(isNew(cs)) news++;
+    else if(isDue(cs)) due++;
+  });
+  return {due, news, total:CARDS.length, streak: state.meta.streak};
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+const app = document.getElementById('app');
+
+function render(){
+  if(!state){ renderLoading(); return; }
+  if(view === 'home') renderHome();
+  else if(view === 'study') renderStudy();
+  else if(view === 'complete') renderComplete();
+}
+
+function renderLoading(){
+  app.innerHTML = `
+    <div class="loading-screen">
+      <div class="loading-glyph">记</div>
+      <div>Carregando seu progresso...</div>
+    </div>`;
+}
+
+let view = 'home';
+
+function renderHome(){
+  const g = globalStats();
+  function rowFor(d){
+    const s = deckStats(d.id);
+    const pct = s.total ? Math.round((s.learned/s.total)*100) : 0;
+    const chopClass = d.tag === 'vida' ? 'deck-chop chop-vida' : 'deck-chop';
+    return `
+      <div class="deck-row">
+        <div class="${chopClass}">${d.chop}</div>
+        <div class="deck-info">
+          <div class="deck-name">${d.name}</div>
+          <div class="deck-progress-bar"><div class="deck-progress-fill" style="width:${pct}%"></div></div>
+          <div class="deck-counts">${s.total} cartões · ${s.due} para revisar · ${s.news} novos</div>
+        </div>
+        <button class="deck-go" data-deck="${d.id}">Estudar</button>
+      </div>`;
+  }
+  const vidaRows = DECKS.filter(d=>d.tag==='vida').map(rowFor).join('');
+  const aulasRows = DECKS.filter(d=>d.tag==='aulas').map(rowFor).join('');
+
+  app.innerHTML = `
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-glyph">记</div>
+        <div class="brand-text">
+          <div class="t1">Memória Mandarim</div>
+          <div class="t2">baseado nas suas aulas reais</div>
+        </div>
+      </div>
+      <div class="streak">🔥 <span class="n">${g.streak}</span> dias</div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat"><div class="val">${g.total}</div><div class="lab">Total</div></div>
+      <div class="stat due"><div class="val">${g.due}</div><div class="lab">Para revisar</div></div>
+      <div class="stat new"><div class="val">${g.news}</div><div class="lab">Novos</div></div>
+      <div class="stat"><div class="val">${state.meta.totalReviews}</div><div class="lab">Revisões totais</div></div>
+    </div>
+
+    <button class="cta-all" id="studyAllBtn" ${ (g.due+Math.min(g.news,state.meta.newPerDay))===0 ? 'disabled' : ''}>
+      <div class="cta-left">
+        <div class="cta-title">Revisar tudo agora</div>
+        <div class="cta-sub">${g.due} pendentes + até ${Math.min(g.news,state.meta.newPerDay)} novos, misturados</div>
+      </div>
+      <div class="cta-arrow">→</div>
+    </button>
+
+    <div class="section-label">Vida real em Xangai · prioridade</div>
+    <div class="deck-list">${vidaRows}</div>
+
+    <div class="section-label">Das suas aulas</div>
+    <div class="deck-list">${aulasRows}</div>
+
+    <div class="footer-row">
+      <div class="new-per-day">
+        Novos por dia <input type="number" id="newPerDayInput" min="0" max="50" value="${state.meta.newPerDay}">
+      </div>
+      <button class="reset-link" id="resetBtn">Reiniciar progresso</button>
+    </div>
+  `;
+
+  document.getElementById('studyAllBtn').onclick = () => startSession(null);
+  document.querySelectorAll('.deck-go').forEach(btn=>{
+    btn.onclick = () => startSession(btn.dataset.deck);
+  });
+  document.getElementById('newPerDayInput').onchange = (e) => {
+    const v = Math.max(0, Math.min(50, parseInt(e.target.value)||0));
+    state.meta.newPerDay = v;
+    saveState();
+    render();
+  };
+  document.getElementById('resetBtn').onclick = () => {
+    if(confirm('Isso vai apagar todo o seu progresso de revisão (não as palavras). Tem certeza?')){
+      state = defaultState();
+      saveState();
+      render();
+    }
+  };
+}
+
+function startSession(deckId){
+  sessionDeckFilter = deckId;
+  currentQueue = buildQueue(deckId);
+  currentIndex = 0;
+  sessionReviewed = 0;
+  view = currentQueue.length ? 'study' : 'home';
+  render();
+}
+
+function renderStudy(){
+  if(currentIndex >= currentQueue.length){ view = 'complete'; render(); return; }
+  const card = currentQueue[currentIndex];
+  const cs = getCardState(card.id);
+  const deckObj = DECKS.find(d=>d.id===card.deck);
+  const deckName = deckObj.name;
+  const chop = deckObj.chop;
+  const chopBadgeClass = deckObj.tag === 'vida' ? 'chop-badge chop-badge-vida' : 'chop-badge';
+
+  app.innerHTML = `
+    <div class="study-topbar">
+      <button class="back-btn" id="backBtn">←</button>
+      <div class="study-progress-text">${currentIndex+1} / ${currentQueue.length}</div>
+      <div class="study-deck-name">${deckName}</div>
+    </div>
+    <div class="stage">
+      <div class="tile-wrap">
+        <div class="tile" id="tile">
+          <div class="face face-front">
+            <div class="${chopBadgeClass}">${chop}</div>
+            <div class="hanzi">${card.hanzi}</div>
+            <div class="tap-hint">toque para virar</div>
+          </div>
+          <div class="face face-back">
+            <button class="sound-btn sound-word" id="soundWordBtn" title="ouvir de novo">🔊 ${card.hanzi}</button>
+            <div class="back-pinyin">${card.pinyin}</div>
+            <div class="back-meaning">${card.pt}</div>
+            <div class="back-divider"></div>
+            <div class="back-example">
+              <div class="zh">${card.ex}</div>
+              <div class="pt">${card.expt}</div>
+              <button class="sound-btn sound-sentence" id="soundSentBtn" title="ouvir a frase">🔊 ouvir frase</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="afterFlip" style="width:100%;display:flex;flex-direction:column;align-items:center;"></div>
+    </div>
+  `;
+
+  const tile = document.getElementById('tile');
+  const afterFlip = document.getElementById('afterFlip');
+  let flipped = false;
+
+  function showRateButtons(){
+    const p = previewIntervals(cs);
+    afterFlip.innerHTML = `
+      <div class="rate-row">
+        <button class="rate-btn again" data-r="0"><span class="lab">Esqueci</span><span class="days">${p.again}d</span></button>
+        <button class="rate-btn" data-r="1"><span class="lab">Difícil</span><span class="days">${p.hard}d</span></button>
+        <button class="rate-btn" data-r="2"><span class="lab">Bom</span><span class="days">${p.good}d</span></button>
+        <button class="rate-btn easy" data-r="3"><span class="lab">Fácil</span><span class="days">${p.easy}d</span></button>
+      </div>`;
+    afterFlip.querySelectorAll('.rate-btn').forEach(btn=>{
+      btn.onclick = (ev) => {
+        ev.stopPropagation();
+        const r = parseInt(btn.dataset.r);
+        rateCard(card.id, r);
+        saveState();
+        sessionReviewed++;
+        if(r===0){
+          // Esqueci: manda pro fim da fila de hoje para reforçar
+          currentQueue.push(card);
+        }
+        currentIndex++;
+        view='study';
+        render();
+      };
+    });
+  }
+
+  function doFlip(){
+    if(flipped) return;
+    flipped = true;
+    tile.classList.add('flipped');
+    setTimeout(() => {
+      showRateButtons();
+      speak(card.hanzi); // toca o áudio automaticamente ao virar
+      const wb = document.getElementById('soundWordBtn');
+      const sb = document.getElementById('soundSentBtn');
+      if(wb) wb.onclick = (ev) => { ev.stopPropagation(); speak(card.hanzi); };
+      if(sb) sb.onclick = (ev) => { ev.stopPropagation(); speak(card.ex); };
+    }, 400);
+  }
+
+  tile.onclick = doFlip;
+  afterFlip.innerHTML = `<div class="flip-cta">Toque no cartão para ver o significado</div>`;
+
+  document.getElementById('backBtn').onclick = () => { view='home'; render(); };
+}
+
+function renderComplete(){
+  app.innerHTML = `
+    <div class="complete-screen">
+      <div class="complete-glyph">好</div>
+      <div class="complete-title">Sessão concluída</div>
+      <div class="complete-sub">Você revisou ${sessionReviewed} cartão${sessionReviewed===1?'':'s'}${sessionDeckFilter ? ' neste tema' : ''}. O progresso já foi salvo.</div>
+      <div class="complete-stats">
+        <div><div class="v">${state.meta.streak}</div><div class="l">Sequência</div></div>
+        <div><div class="v">${state.meta.totalReviews}</div><div class="l">Total geral</div></div>
+      </div>
+      <button class="home-btn" id="homeBtn">Voltar ao início</button>
+    </div>`;
+  document.getElementById('homeBtn').onclick = () => { view='home'; render(); };
+}
+
+/* ============================================================
+   INICIALIZAÇÃO
+   ============================================================ */
+(function init(){
+  renderLoading();
+  state = loadState();
+  view = 'home';
+  render();
+})();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(()=>{ /* offline opcional, segue sem cache */ });
+  });
+}
+</script>
+</body>
+</html>
