@@ -257,6 +257,10 @@
   .sound-word{font-family:var(--font-display);font-size:15px;font-weight:600;padding:6px 14px;margin-bottom:2px;}
   .sound-sentence{font-size:10.5px;color:var(--ink-soft);padding:4px 10px;margin-top:10px;}
   .sound-btn:active{background:var(--seal);color:#f3ece0;border-color:var(--seal);}
+  .sound-front{
+    position:absolute;bottom:34px;font-size:15px;padding:6px 10px;border-radius:50%;
+    width:34px;height:34px;display:flex;align-items:center;justify-content:center;z-index:3;
+  }
 
   .rate-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%;max-width:340px;margin-top:24px;}
   .rate-btn{
@@ -1147,6 +1151,8 @@ function renderStudy(){
   const chop = deckObj.chop;
   const chopBadgeClass = deckObj.tag === 'vida' ? 'chop-badge chop-badge-vida' : 'chop-badge';
 
+  speak(card.hanzi); // toca assim que o cartão (a frente) aparece, antes mesmo de virar
+
   app.innerHTML = `
     <div class="study-topbar">
       <button class="back-btn" id="backBtn">←</button>
@@ -1159,6 +1165,7 @@ function renderStudy(){
           <div class="face face-front">
             <div class="${chopBadgeClass}">${chop}</div>
             <div class="hanzi">${card.hanzi}</div>
+            <button class="sound-btn sound-front" id="soundFrontBtn" title="ouvir de novo">🔊</button>
             <div class="tap-hint">toque para virar</div>
           </div>
           <div class="face face-back">
@@ -1225,6 +1232,8 @@ function renderStudy(){
 
   tile.onclick = doFlip;
   afterFlip.innerHTML = `<div class="flip-cta">Toque no cartão para ver o significado</div>`;
+  const fb = document.getElementById('soundFrontBtn');
+  if(fb) fb.onclick = (ev) => { ev.stopPropagation(); speak(card.hanzi); };
 
   document.getElementById('backBtn').onclick = () => { view='home'; render(); };
 }
