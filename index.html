@@ -181,6 +181,14 @@
 
   /* ---------- settings / footer ---------- */
   .footer-row{display:flex;justify-content:space-between;align-items:center;margin-top:26px;padding-top:14px;border-top:1px solid var(--line);}
+  .backup-row{margin-top:22px;padding-top:16px;border-top:1px solid var(--line);}
+  .backup-text{font-size:11px;color:var(--ink-soft);margin-bottom:10px;}
+  .backup-buttons{display:flex;gap:8px;}
+  .backup-btn{
+    flex:1;border:1px solid var(--line-strong);background:var(--paper-raised);color:var(--ink);
+    border-radius:5px;padding:9px 6px;font-size:11.5px;cursor:pointer;font-family:var(--font-body);
+  }
+  .backup-btn:active{background:var(--ink);color:var(--paper-raised);}
   .new-per-day{font-size:11.5px;color:var(--ink-soft);display:flex;align-items:center;gap:6px;}
   .new-per-day input{width:44px;font-family:var(--font-body);font-size:12px;padding:3px 5px;border:1px solid var(--line-strong);border-radius:3px;background:var(--paper-raised);color:var(--ink);}
   .reset-link{font-size:11px;color:var(--ink-faint);background:none;border:none;text-decoration:underline;cursor:pointer;font-family:var(--font-body);}
@@ -439,6 +447,11 @@ const DECKS = [
   {id:'restaurante_delivery', name:'Restaurante e delivery', chop:'餐', tag:'vida'},
   {id:'mercado_compras', name:'Mercado e compras', chop:'市', tag:'vida'},
   {id:'transporte_taxi', name:'Táxi, carro e trânsito', chop:'车', tag:'vida'},
+  {id:'numeros_dinheiro', name:'Números grandes e dinheiro', chop:'亿', tag:'vida'},
+  {id:'administracao_vida', name:'Administração e vida prática', chop:'政', tag:'vida'},
+  {id:'saude_farmacia', name:'Saúde e farmácia', chop:'药', tag:'vida'},
+  {id:'mandarim_negocios', name:'Mandarim de negócios', chop:'商', tag:'vida'},
+  {id:'social_sobrevivencia', name:'Conversa social e sobrevivência', chop:'谈', tag:'vida'},
   // conteúdo das suas aulas
   {id:'fundamentos', name:'Fundamentos: comida e objetos', chop:'基', tag:'aulas'},
   {id:'padroes', name:'Padrões-chave: 是 / 在 / 了', chop:'是', tag:'aulas'},
@@ -509,6 +522,94 @@ const CARDS = [
 {id:'tt14',hanzi:'靠边停',pinyin:'kàobiān tíng',pt:'encostar / parar no acostamento',ex:'师傅，麻烦靠边停。',expt:'Motorista, por favor encoste ali.',deck:'transporte_taxi'},
 {id:'tt15',hanzi:'系安全带',pinyin:'jì ānquándài',pt:'colocar o cinto de segurança',ex:'请系好安全带。',expt:'Por favor, coloque o cinto de segurança.',deck:'transporte_taxi'},
 {id:'tt16',hanzi:'共享单车',pinyin:'gòngxiǎng dānchē',pt:'bicicleta compartilhada',ex:'我骑共享单车上班。',expt:'Eu vou de bike compartilhada para o trabalho.',deck:'transporte_taxi'},
+
+{id:'nd1',hanzi:'万',pinyin:'wàn',pt:'dez mil (10.000)',ex:'这个多少钱？五万。',expt:'Quanto custa isso? Cinquenta mil.',deck:'numeros_dinheiro'},
+{id:'nd2',hanzi:'十万',pinyin:'shíwàn',pt:'cem mil (100.000)',ex:'这套房子十万一年。',expt:'Esse apartamento custa cem mil por ano.',deck:'numeros_dinheiro'},
+{id:'nd3',hanzi:'百万',pinyin:'bǎiwàn',pt:'um milhão — literalmente "cem-wan"',ex:'这个合同差不多一百万。',expt:'Esse contrato é quase um milhão.',deck:'numeros_dinheiro'},
+{id:'nd4',hanzi:'千万',pinyin:'qiānwàn',pt:'dez milhões — literalmente "mil-wan"',ex:'公司今年的目标是三千万。',expt:'A meta da empresa esse ano é trinta milhões.',deck:'numeros_dinheiro'},
+{id:'nd5',hanzi:'亿',pinyin:'yì',pt:'cem milhões',ex:'这家公司值十亿。',expt:'Essa empresa vale um bilhão.',deck:'numeros_dinheiro'},
+{id:'nd6',hanzi:'十亿',pinyin:'shíyì',pt:'um bilhão — literalmente "dez-yi"',ex:'这家公司值十亿。',expt:'Essa empresa vale um bilhão.',deck:'numeros_dinheiro'},
+{id:'nd7',hanzi:'汇率',pinyin:'huìlǜ',pt:'taxa de câmbio',ex:'今天的汇率是多少？',expt:'Qual é a taxa de câmbio hoje?',deck:'numeros_dinheiro'},
+{id:'nd8',hanzi:'人民币',pinyin:'Rénmínbì',pt:'Renminbi (moeda chinesa, RMB)',ex:'我需要换人民币。',expt:'Eu preciso trocar por Renminbi.',deck:'numeros_dinheiro'},
+{id:'nd9',hanzi:'块',pinyin:'kuài',pt:'"conto" (forma informal de dizer yuan)',ex:'这个三十块。',expt:'Isso custa trinta contos.',deck:'numeros_dinheiro'},
+{id:'nd10',hanzi:'银行卡',pinyin:'yínhángkǎ',pt:'cartão bancário',ex:'我的银行卡丢了。',expt:'Perdi meu cartão bancário.',deck:'numeros_dinheiro'},
+{id:'nd11',hanzi:'转账',pinyin:'zhuǎnzhàng',pt:'transferência bancária',ex:'我给你转账。',expt:'Eu faço uma transferência para você.',deck:'numeros_dinheiro'},
+{id:'nd12',hanzi:'手续费',pinyin:'shǒuxùfèi',pt:'taxa de serviço/tarifa',ex:'转账有手续费吗？',expt:'Tem tarifa na transferência?',deck:'numeros_dinheiro'},
+{id:'nd13',hanzi:'合同',pinyin:'hétong',pt:'contrato',ex:'请签这份合同。',expt:'Por favor, assine este contrato.',deck:'numeros_dinheiro'},
+{id:'nd14',hanzi:'发票',pinyin:'fāpiào',pt:'nota fiscal',ex:'可以给我发票吗？',expt:'Pode me dar a nota fiscal?',deck:'numeros_dinheiro'},
+{id:'nd15',hanzi:'定金',pinyin:'dìngjīn',pt:'sinal / depósito (pagamento antecipado)',ex:'我们需要先付定金。',expt:'Precisamos pagar o sinal primeiro.',deck:'numeros_dinheiro'},
+{id:'nd16',hanzi:'报价',pinyin:'bàojià',pt:'cotação / orçamento (preço proposto)',ex:'请给我们报价。',expt:'Por favor, nos envie a cotação.',deck:'numeros_dinheiro'},
+{id:'nd17',hanzi:'谈判',pinyin:'tánpàn',pt:'negociar / negociação',ex:'我们明天谈判价格。',expt:'Amanhã negociamos o preço.',deck:'numeros_dinheiro'},
+{id:'nd18',hanzi:'交货期',pinyin:'jiāohuòqī',pt:'prazo de entrega',ex:'交货期是多久？',expt:'Qual é o prazo de entrega?',deck:'numeros_dinheiro'},
+
+{id:'av1',hanzi:'派出所',pinyin:'pàichūsuǒ',pt:'delegacia de polícia local (do bairro)',ex:'我需要去派出所登记。',expt:'Eu preciso ir à delegacia local me registrar.',deck:'administracao_vida'},
+{id:'av2',hanzi:'住宿登记',pinyin:'zhùsù dēngjì',pt:'registro de hospedagem (obrigatório em até 24h)',ex:'外国人需要做住宿登记。',expt:'Estrangeiros precisam fazer o registro de hospedagem.',deck:'administracao_vida'},
+{id:'av3',hanzi:'居留许可',pinyin:'jūliú xǔkě',pt:'autorização de residência',ex:'我的居留许可快到期了。',expt:'Minha autorização de residência está quase vencendo.',deck:'administracao_vida'},
+{id:'av4',hanzi:'签证',pinyin:'qiānzhèng',pt:'visto',ex:'我的签证还有效吗？',expt:'Meu visto ainda está válido?',deck:'administracao_vida'},
+{id:'av5',hanzi:'续签',pinyin:'xùqiān',pt:'renovar (visto/documento)',ex:'我要续签护照。',expt:'Eu preciso renovar o passaporte.',deck:'administracao_vida'},
+{id:'av6',hanzi:'护照',pinyin:'hùzhào',pt:'passaporte',ex:'请给我看你的护照。',expt:'Por favor, me mostre seu passaporte.',deck:'administracao_vida'},
+{id:'av7',hanzi:'物业',pinyin:'wùyè',pt:'administração predial / condomínio',ex:'我要联系物业。',expt:'Eu preciso contatar a administração do prédio.',deck:'administracao_vida'},
+{id:'av8',hanzi:'房东',pinyin:'fángdōng',pt:'proprietário (locador)',ex:'我的房东人很好。',expt:'Meu proprietário é uma pessoa muito boa.',deck:'administracao_vida'},
+{id:'av9',hanzi:'押金',pinyin:'yājīn',pt:'caução / depósito',ex:'押金是一个月的房租。',expt:'O depósito é de um mês de aluguel.',deck:'administracao_vida'},
+{id:'av10',hanzi:'水电费',pinyin:'shuǐdiànfèi',pt:'conta de água e luz',ex:'这个月水电费多少钱？',expt:'Quanto foi a conta de água e luz esse mês?',deck:'administracao_vida'},
+{id:'av11',hanzi:'交房租',pinyin:'jiāo fángzū',pt:'pagar o aluguel',ex:'我每个月交房租。',expt:'Eu pago o aluguel todo mês.',deck:'administracao_vida'},
+{id:'av12',hanzi:'手机卡',pinyin:'shǒujīkǎ',pt:'chip de celular',ex:'我需要买一张手机卡。',expt:'Eu preciso comprar um chip de celular.',deck:'administracao_vida'},
+{id:'av13',hanzi:'快递',pinyin:'kuàidì',pt:'encomenda / entrega (courier)',ex:'我的快递到了吗？',expt:'Minha encomenda chegou?',deck:'administracao_vida'},
+{id:'av14',hanzi:'取快递',pinyin:'qǔ kuàidì',pt:'retirar a encomenda',ex:'我去楼下取快递。',expt:'Vou lá embaixo retirar a encomenda.',deck:'administracao_vida'},
+{id:'av15',hanzi:'保安',pinyin:'bǎo\'ān',pt:'segurança / porteiro',ex:'保安在门口。',expt:'O segurança está na porta.',deck:'administracao_vida'},
+{id:'av16',hanzi:'邻居',pinyin:'línjū',pt:'vizinho',ex:'我的邻居很安静。',expt:'Meu vizinho é bem quieto.',deck:'administracao_vida'},
+{id:'av17',hanzi:'报修',pinyin:'bàoxiū',pt:'reportar um conserto/manutenção',ex:'我要给物业报修。',expt:'Eu preciso reportar um conserto pra administração.',deck:'administracao_vida'},
+{id:'av18',hanzi:'网络',pinyin:'wǎngluò',pt:'internet / rede',ex:'家里的网络坏了。',expt:'A internet de casa quebrou.',deck:'administracao_vida'},
+
+{id:'sf1',hanzi:'药店',pinyin:'yàodiàn',pt:'farmácia',ex:'附近有药店吗？',expt:'Tem farmácia perto daqui?',deck:'saude_farmacia'},
+{id:'sf2',hanzi:'挂号',pinyin:'guàhào',pt:'fazer registro/senha (no hospital)',ex:'我要先挂号。',expt:'Eu preciso fazer o registro primeiro.',deck:'saude_farmacia'},
+{id:'sf3',hanzi:'急诊',pinyin:'jízhěn',pt:'pronto-socorro / emergência',ex:'急诊在哪里？',expt:'Onde fica o pronto-socorro?',deck:'saude_farmacia'},
+{id:'sf4',hanzi:'头疼',pinyin:'tóuténg',pt:'dor de cabeça',ex:'我头疼。',expt:'Estou com dor de cabeça.',deck:'saude_farmacia'},
+{id:'sf5',hanzi:'肚子疼',pinyin:'dùzi téng',pt:'dor de barriga',ex:'我肚子疼。',expt:'Estou com dor de barriga.',deck:'saude_farmacia'},
+{id:'sf6',hanzi:'过敏',pinyin:'guòmǐn',pt:'alergia',ex:'我对海鲜过敏。',expt:'Eu sou alérgico a frutos do mar.',deck:'saude_farmacia'},
+{id:'sf7',hanzi:'我对...过敏',pinyin:'wǒ duì...guòmǐn',pt:'"eu sou alérgico a..."',ex:'我对花生过敏。',expt:'Eu sou alérgico a amendoim.',deck:'saude_farmacia'},
+{id:'sf8',hanzi:'救护车',pinyin:'jiùhùchē',pt:'ambulância',ex:'请叫救护车！',expt:'Por favor, chama uma ambulância!',deck:'saude_farmacia'},
+{id:'sf9',hanzi:'处方',pinyin:'chǔfāng',pt:'receita médica',ex:'医生给了我处方。',expt:'O médico me deu uma receita.',deck:'saude_farmacia'},
+{id:'sf10',hanzi:'药',pinyin:'yào',pt:'remédio',ex:'我需要吃药。',expt:'Eu preciso tomar remédio.',deck:'saude_farmacia'},
+{id:'sf11',hanzi:'感冒',pinyin:'gǎnmào',pt:'resfriado / gripe',ex:'我感冒了。',expt:'Estou resfriado.',deck:'saude_farmacia'},
+{id:'sf12',hanzi:'体检',pinyin:'tǐjiǎn',pt:'check-up médico',ex:'我明天要体检。',expt:'Amanhã eu tenho check-up médico.',deck:'saude_farmacia'},
+{id:'sf13',hanzi:'牙医',pinyin:'yáyī',pt:'dentista',ex:'我需要看牙医。',expt:'Eu preciso ir ao dentista.',deck:'saude_farmacia'},
+{id:'sf14',hanzi:'医保',pinyin:'yībǎo',pt:'plano de saúde / seguro médico',ex:'你有医保吗？',expt:'Você tem plano de saúde?',deck:'saude_farmacia'},
+{id:'sf15',hanzi:'疼',pinyin:'téng',pt:'doer',ex:'这里疼吗？',expt:'Dói aqui?',deck:'saude_farmacia'},
+
+{id:'mn1',hanzi:'会议',pinyin:'huìyì',pt:'reunião',ex:'我们下午有会议。',expt:'Temos reunião à tarde.',deck:'mandarim_negocios'},
+{id:'mn2',hanzi:'议程',pinyin:'yìchéng',pt:'pauta / agenda',ex:'今天的议程是什么？',expt:'Qual é a pauta de hoje?',deck:'mandarim_negocios'},
+{id:'mn3',hanzi:'合作',pinyin:'hézuò',pt:'cooperação / parceria',ex:'我们希望长期合作。',expt:'Esperamos uma parceria de longo prazo.',deck:'mandarim_negocios'},
+{id:'mn4',hanzi:'供应商',pinyin:'gōngyìngshāng',pt:'fornecedor',ex:'他是我们的供应商。',expt:'Ele é nosso fornecedor.',deck:'mandarim_negocios'},
+{id:'mn5',hanzi:'报价单',pinyin:'bàojiàdān',pt:'proposta de preço (documento)',ex:'请发给我报价单。',expt:'Por favor, me manda a proposta de preço.',deck:'mandarim_negocios'},
+{id:'mn6',hanzi:'谈合同',pinyin:'tán hétong',pt:'negociar um contrato',ex:'我们在谈合同。',expt:'Estamos negociando um contrato.',deck:'mandarim_negocios'},
+{id:'mn7',hanzi:'签字',pinyin:'qiānzì',pt:'assinar',ex:'请在这里签字。',expt:'Por favor, assine aqui.',deck:'mandarim_negocios'},
+{id:'mn8',hanzi:'敬业',pinyin:'jìngyè',pt:'dedicado ao trabalho / profissional',ex:'他工作很敬业。',expt:'Ele é muito dedicado no trabalho.',deck:'mandarim_negocios'},
+{id:'mn9',hanzi:'辛苦了',pinyin:'xīnkǔ le',pt:'"obrigado pelo esforço" (cortesia após trabalho)',ex:'大家辛苦了。',expt:'Obrigado pelo esforço de todos.',deck:'mandarim_negocios'},
+{id:'mn10',hanzi:'保持联系',pinyin:'bǎochí liánxì',pt:'manter contato',ex:'我们保持联系。',expt:'Vamos manter contato.',deck:'mandarim_negocios'},
+{id:'mn11',hanzi:'谢谢款待',pinyin:'xièxie kuǎndài',pt:'obrigado pela hospitalidade (após jantar de negócios)',ex:'谢谢你的款待。',expt:'Obrigado pela sua hospitalidade.',deck:'mandarim_negocios'},
+{id:'mn12',hanzi:'干杯',pinyin:'gānbēi',pt:'"saúde" / "fundo" (brinde)',ex:'来，干杯！',expt:'Vamos, saúde!',deck:'mandarim_negocios'},
+{id:'mn13',hanzi:'随意',pinyin:'suíyì',pt:'"fique à vontade" (resposta comum ao brinde)',ex:'你随意，我干杯。',expt:'Fica à vontade, eu tomo tudo.',deck:'mandarim_negocios'},
+{id:'mn14',hanzi:'敬你一杯',pinyin:'jìng nǐ yìbēi',pt:'"um brinde a você" (formal)',ex:'我敬你一杯。',expt:'Um brinde a você.',deck:'mandarim_negocios'},
+{id:'mn15',hanzi:'邮件',pinyin:'yóujiàn',pt:'e-mail',ex:'我给你发邮件。',expt:'Eu te mando um e-mail.',deck:'mandarim_negocios'},
+{id:'mn16',hanzi:'附件',pinyin:'fùjiàn',pt:'anexo',ex:'请看附件。',expt:'Por favor, veja o anexo.',deck:'mandarim_negocios'},
+{id:'mn17',hanzi:'回复',pinyin:'huífù',pt:'responder',ex:'请尽快回复。',expt:'Por favor, responda o quanto antes.',deck:'mandarim_negocios'},
+
+{id:'ss1',hanzi:'你能说慢一点吗',pinyin:'nǐ néng shuō màn yìdiǎn ma',pt:'"Você pode falar mais devagar?"',ex:'请问，你能说慢一点吗？',expt:'Com licença, pode falar mais devagar?',deck:'social_sobrevivencia'},
+{id:'ss2',hanzi:'你能写下来吗',pinyin:'nǐ néng xiěxiàlái ma',pt:'"Você pode escrever isso?"',ex:'你能写下来吗？',expt:'Você pode escrever isso pra mim?',deck:'social_sobrevivencia'},
+{id:'ss3',hanzi:'我听不懂',pinyin:'wǒ tīng bù dǒng',pt:'"Eu não entendo" (ouvindo)',ex:'对不起，我听不懂。',expt:'Desculpa, eu não entendo.',deck:'social_sobrevivencia'},
+{id:'ss4',hanzi:'再说一遍',pinyin:'zài shuō yíbiàn',pt:'"Pode repetir?"',ex:'可以再说一遍吗？',expt:'Pode repetir, por favor?',deck:'social_sobrevivencia'},
+{id:'ss5',hanzi:'你家人怎么样',pinyin:'nǐ jiārén zěnmeyàng',pt:'"Como está sua família?"',ex:'你家人怎么样？',expt:'Como está sua família?',deck:'social_sobrevivencia'},
+{id:'ss6',hanzi:'哪里哪里',pinyin:'nǎlǐ nǎlǐ',pt:'"Que nada" / "imagina" (resposta humilde a um elogio)',ex:'你中文说得真好！哪里哪里。',expt:'Seu chinês é muito bom! Que nada.',deck:'social_sobrevivencia'},
+{id:'ss7',hanzi:'过奖了',pinyin:'guòjiǎng le',pt:'"Você está exagerando" (resposta humilde formal)',ex:'您过奖了。',expt:'O senhor está exagerando.',deck:'social_sobrevivencia'},
+{id:'ss8',hanzi:'谢谢夸奖',pinyin:'xièxie kuājiǎng',pt:'"obrigado pelo elogio"',ex:'谢谢夸奖。',expt:'Obrigado pelo elogio.',deck:'social_sobrevivencia'},
+{id:'ss9',hanzi:'慢走',pinyin:'mànzǒu',pt:'"vá com cuidado" (despedida)',ex:'慢走，再见！',expt:'Vá com cuidado, até mais!',deck:'social_sobrevivencia'},
+{id:'ss10',hanzi:'保重',pinyin:'bǎozhòng',pt:'"se cuida" (despedida carinhosa)',ex:'保重，下次见。',expt:'Se cuida, até a próxima.',deck:'social_sobrevivencia'},
+{id:'ss11',hanzi:'有空聚聚',pinyin:'yǒu kòng jùjù',pt:'"vamos nos ver quando tiver tempo" (convite social comum)',ex:'有空聚聚啊。',expt:'Vamos nos ver quando tiver um tempo.',deck:'social_sobrevivencia'},
+{id:'ss12',hanzi:'不客气',pinyin:'bú kèqi',pt:'"de nada"',ex:'谢谢！不客气。',expt:'Obrigado! De nada.',deck:'social_sobrevivencia'},
+{id:'ss13',hanzi:'麻烦您了',pinyin:'máfan nín le',pt:'"desculpe incomodar" (formal, polido)',ex:'麻烦您了，谢谢。',expt:'Desculpe incomodar, obrigado.',deck:'social_sobrevivencia'},
+{id:'ss14',hanzi:'没关系',pinyin:'méi guānxi',pt:'"tudo bem" / "sem problema"',ex:'没关系，别担心。',expt:'Tudo bem, não se preocupa.',deck:'social_sobrevivencia'},
+{id:'ss15',hanzi:'恭喜恭喜',pinyin:'gōngxǐ gōngxǐ',pt:'"parabéns" (repetido, tom social/festivo)',ex:'恭喜恭喜！',expt:'Parabéns!',deck:'social_sobrevivencia'},
 
 {id:'f1',hanzi:'咖啡',pinyin:'kāfēi',pt:'café',ex:'我喜欢喝咖啡。',expt:'Eu gosto de tomar café.',deck:'fundamentos'},
 {id:'f2',hanzi:'可乐',pinyin:'kělè',pt:'refrigerante de cola',ex:'你喜欢喝什么？可乐还是果汁？',expt:'O que você gosta de beber? Refrigerante ou suco?',deck:'fundamentos'},
@@ -945,6 +1046,15 @@ function renderHome(){
     <div class="section-label">Das suas aulas</div>
     <div class="deck-list">${aulasRows}</div>
 
+    <div class="backup-row">
+      <div class="backup-text">Salve seu progresso num arquivo pra trocar de celular sem perder nada.</div>
+      <div class="backup-buttons">
+        <button class="backup-btn" id="exportBtn">⬇ Exportar backup</button>
+        <button class="backup-btn" id="importBtn">⬆ Importar backup</button>
+      </div>
+      <input type="file" id="importFileInput" accept="application/json" style="display:none">
+    </div>
+
     <div class="footer-row">
       <div class="new-per-day">
         Novos por dia <input type="number" id="newPerDayInput" min="0" max="50" value="${state.meta.newPerDay}">
@@ -971,6 +1081,52 @@ function renderHome(){
       render();
     }
   };
+  document.getElementById('exportBtn').onclick = exportBackup;
+  document.getElementById('importBtn').onclick = () => document.getElementById('importFileInput').click();
+  document.getElementById('importFileInput').onchange = (e) => {
+    if(e.target.files && e.target.files[0]) importBackupFile(e.target.files[0]);
+    e.target.value = ''; // permite reimportar o mesmo arquivo depois, se precisar
+  };
+}
+
+function exportBackup(){
+  const data = JSON.stringify(state, null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `mandarim-backup-${todayStr()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importBackupFile(file){
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    let parsed;
+    try{
+      parsed = JSON.parse(e.target.result);
+    }catch(err){
+      alert('Não consegui ler esse arquivo. Confirma que é um backup exportado por este app.');
+      return;
+    }
+    if(!parsed || typeof parsed !== 'object' || !parsed.cards || !parsed.meta){
+      alert('Esse arquivo não parece ser um backup deste app.');
+      return;
+    }
+    if(!confirm('Isso vai substituir todo o progresso atual pelo do arquivo. Continuar?')) return;
+    state = {
+      cards: parsed.cards || {},
+      meta: Object.assign({}, defaultState().meta, parsed.meta || {})
+    };
+    saveState();
+    render();
+    alert('Backup importado com sucesso!');
+  };
+  reader.onerror = () => alert('Não consegui abrir esse arquivo.');
+  reader.readAsText(file);
 }
 
 function startSession(deckId){
