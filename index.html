@@ -232,7 +232,7 @@
     top:50%;left:8%;right:8%;height:1px;
     background:repeating-linear-gradient(to right, var(--line-strong) 0 6px, transparent 6px 12px);
   }
-  .hanzi{font-family:var(--font-display);font-size:64px;font-weight:700;color:var(--ink);position:relative;z-index:2;line-height:1;}
+  .hanzi{font-family:var(--font-display);font-weight:700;color:var(--ink);position:relative;z-index:2;line-height:1.25;text-align:center;padding:0 14px;}
   .tap-hint{position:absolute;bottom:14px;font-size:10px;letter-spacing:.6px;color:var(--ink-faint);text-transform:uppercase;}
   .chop-badge{
     position:absolute;top:12px;right:12px;background:var(--seal);color:#f3ece0;
@@ -443,6 +443,116 @@ const LESSONS = [
     'Um erro comum de estrangeiro: tratar "a China" como uma cultura uniforme. São 56 grupos étnicos oficialmente reconhecidos e uma diversidade regional de língua, culinária e costumes que se compara mais à diversidade interna da Europa do que a um país "único". Aprender mandarim não é só decorar palavras — é decodificar milhares de anos de história condensados em expressões do dia a dia. É exatamente por isso que continuar, como você está fazendo, compensa muito além do vocabulário em si.'
   ],
   fact:'Em pouco mais de uma geração, a China saiu de renda majoritariamente rural e de baixa renda para a segunda maior economia do planeta — uma velocidade sem precedente histórico conhecido.'
+},
+{
+  id:'l11', icon:'墙',
+  title:'A Grande Muralha: o mito que a própria China corrigiu',
+  hook:'Nem da órbita baixa dá pra ver — e foi um astronauta chinês quem provou isso.',
+  body:[
+    'Segundo o levantamento oficial mais completo, concluído pelo governo chinês em 2012, a Grande Muralha (somando todos os trechos, ramificações e barreiras naturais construídos ao longo de várias dinastias) tem 21.196 km. Os trechos mais antigos são do século 3 a.C. (dinastia Qin), mas a versão mais famosa e mais bem preservada, com as torres de vigia icônicas, é da dinastia Ming — construída contra ameaças mongóis, séculos depois.',
+    'O mito de que a Muralha é visível da Lua (ou até da órbita baixa) a olho nu circula desde uma carta de 1754 e virou "fato" popular depois de aparecer numa revista americana em 1932. O problema: a muralha tem só 5 a 9 metros de largura em média, estreita demais e camuflada demais com a paisagem pra ser vista de tão longe.',
+    'A parte mais interessante: livros escolares chineses ensinavam esse mito havia décadas — até 2003, quando Yang Liwei, o primeiro astronauta chinês, voltou do espaço e disse publicamente que não conseguiu ver a Muralha. O Ministério da Educação chinês mandou reescrever o material didático depois disso.'
+  ],
+  fact:'O astronauta que "derrubou" o mito era chinês — a China corrigiu seus próprios livros escolares por causa disso.'
+},
+{
+  id:'l12', icon:'菜',
+  title:'Muito além do "frango xadrez": as 8 cozinhas da China',
+  hook:'O que você come fora da China raramente é autêntico de qualquer região específica.',
+  body:[
+    'A culinária chinesa tradicionalmente se divide em 8 grandes tradições regionais (八大菜系): Sichuan, Cantonesa, Shandong, Jiangsu, Zhejiang, Fujian, Hunan e Anhui. Cada uma tem técnicas, temperos e ingredientes-base bem diferentes — comparar "comida chinesa" como uma coisa só é como tratar comida italiana e comida sueca como "comida europeia".',
+    'A divisão mais simples de perceber no dia a dia: norte come mais trigo (macarrão, pães no vapor, dumplings), sul come mais arroz — reflexo direto do clima e do solo de cada região, não de preferência cultural.',
+    'A pimenta forte de Sichuan (com a famosa pimenta-do-reino-de-Sichuan, 花椒, que deixa a língua dormente) e a culinária cantonesa leve, a vapor, com foco em ingrediente fresco (base do dim sum) estão nos dois extremos opostos do espectro — e ambas são igualmente "chinesas".'
+  ],
+  fact:'"Comida chinesa" fora da China é quase sempre uma criação adaptada ao paladar local — muitas vezes não corresponde a nenhuma das 8 tradições regionais de verdade.'
+},
+{
+  id:'l13', icon:'茶',
+  title:'Por que os portugueses dizem "chá" e quase todo mundo mais diz "tea"',
+  hook:'A palavra que você usa pra pedir chá revela, sem você saber, uma rota comercial de séculos atrás.',
+  body:[
+    'A China é a origem do hábito de tomar chá — a lenda atribui a descoberta ao imperador mítico Shennong, por volta de 2737 a.C. De lá, o costume se espalhou pelo mundo inteiro por duas rotas comerciais diferentes, e isso explica uma curiosidade linguística e tanto.',
+    'Quem recebeu o chá por terra, via Rota da Seda (Pérsia, Rússia, Índia, mundo árabe), herdou uma palavra parecida com "chá" (do mandarim 茶, chá). Quem recebeu por mar, via comerciantes holandeses que compravam de portos de Fujian (onde o dialeto local pronuncia o caractere como "te"), herdou uma palavra parecida com "tea" (inglês tea, francês thé, alemão Tee).',
+    'O português é a exceção interessante no Ocidente: como Portugal comercializava direto com Macau (região de fala cantonesa, que também diz "chá"), o português ficou do lado "chá" da divisão linguística — diferente de quase todos os vizinhos europeus.'
+  ],
+  fact:'Só de ouvir se um idioma diz "chá" ou "tea", dá pra saber, com boa precisão, se aquele povo comprou chá por terra ou por mar há séculos.'
+},
+{
+  id:'l14', icon:'马',
+  title:'O zodíaco chinês e a Grande Corrida',
+  hook:'A ordem dos 12 animais vem de uma corrida lendária — e o rato venceu trapaceando.',
+  body:[
+    'Segundo a lenda, o Imperador de Jade convocou uma corrida entre os animais pra decidir a ordem do calendário zodiacal. O boi estava na frente o caminho todo, mas o rato, esperto, pegou carona nas costas dele e pulou na frente bem na hora de cruzar a linha de chegada — por isso o Rato lidera o ciclo, e o Boi vem em segundo.',
+    'A ordem completa é: Rato, Boi, Tigre, Coelho, Dragão, Serpente, Cavalo, Cabra, Macaco, Galo, Cachorro e Porco (o porco chegou por último, depois de parar pra comer e tirar uma soneca no caminho).',
+    '"你属什么?" (nǐ shǔ shénme, "qual é o seu animal?") é uma pergunta social super comum na China — ela revela imediatamente sua idade aproximada, já que o ciclo se repete a cada 12 anos, e costuma render conversa fácil em jantares e reuniões de trabalho.'
+  ],
+  fact:'2026 é o Ano do Cavalo de Fogo — bom saber, porque essa pergunta provavelmente vai aparecer numa roda de conversa em algum jantar chinês.'
+},
+{
+  id:'l15', icon:'功',
+  title:'Kung Fu não significa "luta" — e Bruce Lee mudou o sentido da palavra',
+  hook:'"功夫" original descreve qualquer habilidade conquistada com tempo e esforço, não briga.',
+  body:[
+    'Antes do cinema de ação popularizar o termo no Ocidente, 功夫 (gōngfu) simplesmente descrevia qualquer habilidade adquirida através de tempo, esforço e disciplina — poderia se aplicar a caligrafia, culinária ou música, tanto quanto a artes marciais. O termo específico para "artes marciais" em chinês é 武术 (wǔshù).',
+    'O Templo de Shaolin (少林寺), em Henan, é o berço mais famoso das artes marciais chinesas — um mosteiro budista fundado no século 5, onde monges desenvolveram treinamento físico rigoroso, em parte ligado à disciplina espiritual, em parte à necessidade histórica de autodefesa.',
+    'Hoje o wushu também é esporte competitivo oficial, com regras e pontuação padronizadas — foi até modalidade de exibição nas Olimpíadas de Pequim 2008. Ou seja: o "kung fu de filme" e o "wushu esportivo" são primos, não a mesma coisa.'
+  ],
+  fact:'Um mestre de caligrafia, tecnicamente falando, também tem "kung fu" — o termo nunca foi exclusivo de luta até o cinema ocidental simplificar o sentido.'
+},
+{
+  id:'l16', icon:'码',
+  title:'O "super app" que a China inventou antes do resto do mundo copiar',
+  hook:'Enquanto o Ocidente ainda usa um app pra cada coisa, a China já resolveu isso há mais de uma década.',
+  body:[
+    'No Ocidente, mensagem, pagamento, transporte e delivery costumam ser apps separados. Na China, o WeChat (微信) e o Alipay (支付宝) consolidaram quase tudo isso num "super app" só, anos antes de qualquer concorrente ocidental tentar imitar esse modelo.',
+    'O resultado prático: dinheiro em espécie virou genuinamente raro nas cidades chinesas muito antes disso acontecer em boa parte do mundo — pagamento por QR code é o padrão até na barraquinha de rua ou na feira de bairro.',
+    'Pra você, que já usa esse ecossistema no dia a dia em Xangai, vale o lembrete: esses apps não são só "conveniência" — são a espinha dorsal de como praticamente todo negócio, pequeno ou grande, opera na China hoje.'
+  ],
+  fact:'A China pulou praticamente toda a era do cartão de crédito, indo direto do dinheiro em espécie pro pagamento por QR code.'
+},
+{
+  id:'l17', icon:'考',
+  title:'Gaokao: o exame de um dia só que decide o futuro de 13 milhões',
+  hook:'"Milhares de soldados e dezenas de milhares de cavalos atravessando uma ponte de tronco só."',
+  body:[
+    '高考 (gāokǎo) significa literalmente "exame alto" — é o vestibular nacional chinês, e para a maioria dos estudantes é o único fator que decide em qual universidade (ou se numa universidade) eles vão entrar. Em 2026, cerca de 12,9 milhões de estudantes se inscreveram, num exame que costuma valer até 750 pontos no total.',
+    'A logística é de operação de estado: bloqueadores de sinal contra cola eletrônica, reconhecimento facial, tráfego desviado ao redor dos locais de prova, obras paradas nas proximidades, e ambulâncias de prontidão. Um ditado popular resume a competição: "千军万马过独木桥" — "milhares de soldados e dezenas de milhares de cavalos atravessando uma ponte de tronco só".',
+    'O exame foi suspenso durante a Revolução Cultural e só voltou em 1977. Pra muitas famílias, principalmente fora dos grandes centros, o gaokao continua sendo a rota mais clara de ascensão social — o que explica a pressão gigantesca em volta dele.'
+  ],
+  fact:'Em 2026, quase 13 milhões de jovens fizeram a mesma prova, nos mesmos dias, em todo o país — uma das maiores operações logísticas de exame do mundo.'
+},
+{
+  id:'l18', icon:'医',
+  title:'Yin-yang, qi, e a medicina que convive com a moderna',
+  hook:'Não é "medicina alternativa" à margem — funciona dentro do sistema público de saúde.',
+  body:[
+    'A Medicina Tradicional Chinesa (中医, zhōngyī) se baseia em conceitos como qi (气, energia vital), o equilíbrio yin-yang (阴阳) e um sistema de meridianos usado na acupuntura (针灸) — ideias registradas desde o Huangdi Neijing (Clássico Interno do Imperador Amarelo), um texto com mais de 2 mil anos.',
+    'Diferente da imagem de "medicina alternativa" que o termo às vezes carrega no Ocidente, na China a medicina tradicional funciona integrada ao sistema de saúde: é comum um hospital geral ter uma ala inteira dedicada a ela, funcionando ao lado da medicina ocidental, não como concorrente dela.',
+    'Coisas que você pode encontrar no dia a dia: 拔罐 (báguàn, ventosaterapia — deixa marcas circulares roxas nas costas, super comum e não é hematoma de machucado) e lojas de ervas medicinais tradicionais em quase qualquer bairro.'
+  ],
+  fact:'Se você ver alguém com círculos roxos nas costas na academia ou na piscina, é bem provável que seja ventosaterapia (拔罐) — não é uma lesão.'
+},
+{
+  id:'l19', icon:'独',
+  title:'A política do filho único e a geração "4-2-1"',
+  hook:'Uma política de 35 anos moldou a estrutura familiar de praticamente todos os seus colegas de trabalho.',
+  body:[
+    'De 1980 a 2015, a China restringiu a maioria das famílias urbanas a um filho só, numa tentativa de conter o crescimento populacional depois que a população já tinha saltado de cerca de 540 milhões (1949) para 969 milhões (1980). A política foi suavizada para dois filhos em 2016 e para três filhos em 2021 — e as multas por "excesso" de filhos foram removidas de vez semanas depois.',
+    'O efeito colateral demográfico foi enorme: a taxa de fecundidade caiu de 2,6 filhos por mulher no fim dos anos 1980 para apenas 1,15 em 2021. Isso criou o que se chama de estrutura "4-2-1": um filho único que, no futuro, pode ser o único responsável por cuidar de 2 pais e até 4 avós.',
+    'O termo 独生子女 (dúshēngzǐnǚ, "filho único") descreve uma geração inteira que cresceu sem irmãos — algo que molda desde expectativas educacionais (toda a esperança da família num filho só) até dinâmicas de casamento e cuidado dos pais na velhice.'
+  ],
+  fact:'Boa parte dos seus colegas de trabalho chineses entre ~30 e 45 anos provavelmente é filho único — vale ter isso em mente em conversas sobre família.'
+},
+{
+  id:'l20', icon:'字',
+  title:'Como "adivinhar" o significado de um caractere novo',
+  hook:'Mais de 80% dos caracteres chineses seguem uma lógica que você pode aprender a decodificar.',
+  body:[
+    'A maioria dos caracteres chineses (mais de 80%) são "compostos fonético-semânticos" (形声字): uma parte do caractere sugere o SIGNIFICADO (o radical) e outra parte sugere o SOM (o componente fonético). Não é decoreba pura — é um sistema com lógica interna.',
+    'Exemplo clássico: 妈 (mā, "mãe") é formado por 女 (nǚ, radical "mulher", dá a pista do significado) mais 马 (mǎ, "cavalo", que empresta o som "ma"). Outro exemplo: 河 (hé, "rio") tem 氵 (radical "água") mais 可 (kě, que empresta parte do som).',
+    'Dica prática pro seu estudo: quando encontrar um caractere novo que você não conhece, olhe primeiro pro radical (geralmente do lado esquerdo ou em cima) — ele quase sempre entrega uma pista da categoria de significado, mesmo quando você ainda não sabe a pronúncia exata.'
+  ],
+  fact:'Saber reconhecer uns 200 radicais comuns já destrava boa parte da lógica por trás de milhares de caracteres diferentes.'
 }
 ];
 
@@ -787,7 +897,17 @@ if(ttsAvailable){
   window.speechSynthesis.onvoiceschanged = loadVoices;
 }
 function pickZhVoice(){
-  return ttsVoices.find(v => v.lang && v.lang.toLowerCase().startsWith('zh')) || null;
+  if(!ttsVoices.length) return null;
+  // 1) prioriza mandarim simplificado (zh-CN) especificamente — evita pegar
+  //    por engano uma voz de Taiwan (zh-TW) ou Hong Kong/cantonês (zh-HK).
+  const exact = ttsVoices.filter(v => v.lang && v.lang.toLowerCase() === 'zh-cn');
+  const pool = exact.length ? exact : ttsVoices.filter(v => v.lang && v.lang.toLowerCase().startsWith('zh'));
+  if(!pool.length) return null;
+  // 2) dentro do que existe no aparelho, prefere a voz "Aprimorada/Premium"
+  //    se o sistema expõe isso no nome — essas são bem mais claras que a
+  //    voz "compacta" que vem instalada por padrão.
+  const premium = pool.find(v => /premium|enhanced|neural|aprimorad/i.test(v.name));
+  return premium || pool[0];
 }
 function speak(text){
   if(!ttsAvailable || !text) return;
@@ -1142,6 +1262,15 @@ function startSession(deckId){
   render();
 }
 
+function hanziFontSize(text){
+  const len = (text || '').length;
+  if(len <= 4) return 64;
+  if(len <= 6) return 48;
+  if(len <= 8) return 36;
+  if(len <= 12) return 24;
+  return 18;
+}
+
 function renderStudy(){
   if(currentIndex >= currentQueue.length){ view = 'complete'; render(); return; }
   const card = currentQueue[currentIndex];
@@ -1164,7 +1293,7 @@ function renderStudy(){
         <div class="tile" id="tile">
           <div class="face face-front">
             <div class="${chopBadgeClass}">${chop}</div>
-            <div class="hanzi">${card.hanzi}</div>
+            <div class="hanzi" style="font-size:${hanziFontSize(card.hanzi)}px">${card.hanzi}</div>
             <button class="sound-btn sound-front" id="soundFrontBtn" title="ouvir de novo">🔊</button>
             <div class="tap-hint">toque para virar</div>
           </div>
